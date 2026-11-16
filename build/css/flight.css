@@ -1,0 +1,199 @@
+/* AIK Studio — Hero + flight (homepage).
+   One pinned stage. At the top it is the Hero: the first frame of the flight
+   with the headline, the lead and the call to action. Scrolling lifts the Hero
+   away and scrubs the flight; three short captions tell the client's way with
+   AIK; the film settles into the page colour and the page continues (#work).
+   Desktop scrubs an all-intra <video>; phones draw a frame sequence on canvas
+   (js/flight.js). Without script or with reduced motion: the Hero on the first
+   frame, no pin. */
+
+.flight {
+  --len: 520vh;                         /* scroll length of the flight */
+  position: relative;
+  background: var(--obsidian);
+}
+.cine-on .flight { height: var(--len); }
+@media (max-aspect-ratio: 4/5) { .flight { --len: 440vh; } }
+
+.flight__stage {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+.cine-on .flight__stage { position: sticky; top: 0; }
+
+.flight__poster,
+.flight__video,
+.flight__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 45%;
+  z-index: -3;
+}
+.flight__canvas { z-index: -2; opacity: 0; }
+.flight__video { z-index: -2; }
+
+/* Legibility for the Hero: dark from the left and from below, without
+   flattening the sunset. Fades out with the Hero. */
+.flight__shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgb(10 13 17 / 0.78) 0%, rgb(10 13 17 / 0.42) 38%, rgb(10 13 17 / 0) 66%),
+    linear-gradient(0deg, rgb(10 13 17 / 0.72) 0%, rgb(10 13 17 / 0) 46%),
+    linear-gradient(180deg, rgb(10 13 17 / 0.55) 0%, rgb(10 13 17 / 0) 22%);
+  opacity: calc(1 - var(--out, 0) * 0.65);
+}
+/* A very light film grain keeps gradients from banding on big screens. */
+.flight__stage::after {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------------------------------------------------------------- Hero */
+.flight__hero {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-top: var(--header-h);
+  padding-bottom: calc(64px + clamp(40px, 9vh, 104px));
+  opacity: calc(1 - var(--out, 0));
+  transform: translateY(calc(var(--out, 0) * -6vh));
+  filter: blur(calc(var(--out, 0) * 6px));
+  pointer-events: auto;
+}
+.flight__hero.is-gone { visibility: hidden; pointer-events: none; }
+
+.flight__hero .hero__title {
+  max-width: 15ch;
+  font-size: clamp(2.6rem, 5.4vw + 0.6rem, 6.4rem);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-shadow: 0 2px 40px rgb(0 0 0 / 0.25);
+}
+.flight__hero .hero__title .muted { color: var(--mist); font-weight: 400; }
+.flight__hero .hero__lead { max-width: 44ch; color: var(--snow); }
+.flight__hero .hero__lead strong { color: var(--ice); font-weight: 500; }
+
+/* entrance after the loader */
+.cine-on .flight__hero :is(.eyebrow, .hero__title .line, .hero__lead, .hero__actions) {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 900ms var(--ease-out), transform 1300ms var(--ease-out);
+}
+.cine-on .flight.is-on .flight__hero :is(.eyebrow, .hero__title .line, .hero__lead, .hero__actions) { opacity: 1; transform: none; }
+.flight .flight__hero .eyebrow { transition-delay: 100ms; }
+.flight .flight__hero .hero__title .line:nth-child(1) { transition-delay: 200ms; }
+.flight .flight__hero .hero__title .line:nth-child(2) { transition-delay: 320ms; }
+.flight .flight__hero .hero__lead { transition-delay: 480ms; }
+.flight .flight__hero .hero__actions { transition-delay: 600ms; }
+
+/* the bar at the bottom of the Hero: services · scroll · where */
+.flight__foot {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 1;
+  border-top: 1px solid var(--line-dark);
+  opacity: calc(1 - var(--out, 0) * 1.6);
+}
+.cine-on .flight__foot { opacity: 0; transition: opacity 900ms ease 800ms; }
+.cine-on .flight.is-on .flight__foot { opacity: calc(1 - var(--out, 0) * 1.6); transition-delay: 0ms; }
+.flight__foot .hero__foot-inner { color: var(--mist); }
+.flight__foot .scroll-cue::after { animation: aik-cue 2.4s var(--ease-out) infinite; transform-origin: top; }
+@keyframes aik-cue { 0% { transform: scaleY(0); } 45% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+
+/* ---------------------------------------------------------------- captions */
+.flight__captions {
+  position: absolute;
+  left: 0; right: 0; bottom: clamp(40px, 9vh, 96px);
+  z-index: 1;
+  pointer-events: none;
+}
+.flight__caption {
+  position: absolute;
+  left: var(--margin);
+  bottom: 0;
+  max-width: min(36rem, calc(100vw - 2 * var(--margin)));
+  opacity: var(--a, 0);
+  transform: translateY(calc((1 - var(--a, 0)) * 18px));
+  text-shadow: 0 1px 24px rgb(0 0 0 / 0.45);
+}
+@media (min-width: 1440px) { .flight__caption { left: calc((100vw - var(--max)) / 2); } }
+.flight__caption .no {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  color: var(--mist);
+  font: 500 var(--fs-eyebrow)/1 var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.flight__caption .no::before { content: ""; width: 40px; height: 1px; background: var(--champagne); }
+.flight__caption h2 {
+  font-size: clamp(1.9rem, 2.6vw + 0.8rem, 3.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+.flight__caption p {
+  margin-top: 14px;
+  max-width: 40ch;
+  color: var(--snow);
+  font-size: var(--fs-lead);
+  line-height: 1.5;
+}
+
+/* thin progress rail on the right: where in the flight we are */
+.flight__rail {
+  position: absolute;
+  right: var(--margin);
+  top: 50%;
+  z-index: 1;
+  width: 1px;
+  height: 28vh;
+  translate: 0 -50%;
+  background: rgb(197 207 214 / 0.18);
+  opacity: var(--rail, 0);
+}
+.flight__rail::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--ice);
+  transform-origin: top;
+  transform: scaleY(var(--v, 0));
+}
+
+@media (max-width: 640px) {
+  .flight__hero { padding-bottom: calc(56px + 32px); }
+  .flight__hero .hero__lead { font-size: 1.0625rem; }
+  .flight__rail { display: none; }
+  .flight__shade {
+    background:
+      linear-gradient(0deg, rgb(10 13 17 / 0.88) 0%, rgb(10 13 17 / 0.5) 45%, rgb(10 13 17 / 0.1) 70%),
+      linear-gradient(180deg, rgb(10 13 17 / 0.55) 0%, rgb(10 13 17 / 0) 25%);
+  }
+}
+
+/* Header appears after the loader has opened the screen. */
+.cine-on .site-header.is-cine-hidden { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+.site-header { transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out), background-color 240ms ease, border-color 240ms ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .flight__video, .flight__canvas, .flight__captions, .flight__rail { display: none; }
+}

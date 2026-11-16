@@ -1,0 +1,281 @@
+/* AIK Studio — Selected Work (#work): the first block after the Hero.
+   Direction A, "Editorial Precision" (prototypes/work-a.html), with one
+   element of B: the film's own fog carried over the section head, so the
+   Hero's atmosphere settles into the interface instead of ending at a cut.
+
+   Large thin Space Grotesk carries the section; photographs are laid against
+   the type rather than boxed in cards. Sizes run large → medium → small. */
+
+.work {
+  position: relative;
+  overflow: hidden;
+  overflow: clip;                          /* clips without becoming a scroll container (scroll timelines) */
+  isolation: isolate;
+  padding-block: clamp(120px, 18vh, 200px) var(--section-pad);
+  background: var(--surface-dark);
+  color: var(--text-on-dark);
+}
+
+/* The Hero's far fog, faint and masked at both ends, behind the heading. */
+.work__fog {
+  position: absolute;
+  inset: 0 -6% auto;
+  height: min(120vh, 1100px);
+  z-index: -1;
+  background: url("../media/flight/fog-far.webp") center top / cover no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0.2;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 100%);
+  pointer-events: none;
+}
+
+.micro {
+  color: var(--text-on-dark-subtle);
+  font: 500 0.6875rem/1.45 var(--font-display);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.work__row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+}
+.work__row > :last-child { justify-self: end; text-align: right; }
+.work__row .no { color: var(--accent); }
+
+/* ------------------------------------------------------------ head */
+/* Three lines, the middle word set back as a ghost; the lead sits in the
+   space it leaves. */
+.work__title {
+  margin-top: clamp(56px, 10vh, 112px);
+  font-size: clamp(3.2rem, 9.6vw, 11rem);
+  font-weight: 300;
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+  text-wrap: initial;
+}
+.work__title .l { display: block; }
+.work__title .l2 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-items: center;
+}
+.work__title .l2 em {
+  grid-column: 7 / -1;
+  color: var(--steel);                     /* recedes, but still reads: 4.3:1 at display size */
+  font-style: normal;
+  line-height: 1;                          /* room for the umlaut of FÜR */
+}
+.work__lead {
+  grid-column: 1 / 6; grid-row: 1;
+  max-width: 34ch;
+  color: var(--text-on-dark-muted);
+  font: 400 1rem/1.55 var(--font-body);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.work__cta { margin: clamp(40px, 6vh, 64px) 0 0; }   /* pill: sections.css */
+
+/* ------------------------------------------------------------ projects */
+.work__list { margin: clamp(112px, 17vh, 200px) 0 0; padding: 0; list-style: none; }
+.work__list > li + li { margin-top: clamp(140px, 22vh, 260px); }
+.project__head { padding-bottom: 18px; border-bottom: 1px solid var(--line-dark); }
+.project__head > :first-child { color: var(--accent); }   /* the index number */
+
+.project__name {
+  font-weight: 300;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  text-wrap: initial;
+}
+.project__name--fit > span,
+.project__ghost > span { display: inline-block; }
+
+.project__body {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+
+.project__media { position: relative; margin: 0; overflow: hidden; overflow: clip; background: var(--surface-dark-raised); }
+.project__media img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transform: scale(1.001);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+@media (hover: hover) {
+  .project__media:hover img { transform: scale(1.035); }
+}
+
+.project__facts { margin: 0; }
+.project__facts > div {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 14px;
+  padding-block: 11px;
+  border-top: 1px solid var(--line-dark);
+}
+.project__facts dt {
+  color: var(--text-on-dark-subtle);
+  font: 500 0.625rem/1.75 var(--font-display);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.project__facts dd { margin: 0; color: var(--text-on-dark-muted); font-size: 0.875rem; line-height: 1.5; }
+.project__note {
+  margin-top: 22px;
+  max-width: 46ch;
+  color: var(--text-on-dark-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* 01 — the largest moment: the name runs the full width (sized by site.js, data-fit),
+   the photograph covers only the foot of the letters. --fs is that size. */
+.project--a .project__name { margin-top: 28px; font-size: 22vw; line-height: 0.78; white-space: nowrap; }
+.project--a .project__body { position: relative; margin-top: calc(var(--fs, 20vw) * -0.2); }
+.project--a .project__media { grid-column: 5 / -1; grid-row: 1; aspect-ratio: 3 / 2; z-index: 1; }
+.project--a .project__text { grid-column: 1 / 5; grid-row: 1; align-self: end; padding-right: 12px; }
+/* A second, smaller photograph steps down under the facts; the note sits beside it. */
+.project--a .project__detail { grid-column: 2 / 5; grid-row: 2; margin-top: clamp(72px, 11vh, 128px); aspect-ratio: 4 / 5; }
+.project__detail img { object-position: 48% 50%; }
+.project--a .project__aside { grid-column: 6 / 10; grid-row: 2; align-self: end; }
+.project__cap { color: var(--text-on-dark-subtle); }
+.project--a .project__aside .project__note { margin-top: 14px; }
+
+/* Other projects, as a quiet text index after the case. */
+.work__also { margin-top: clamp(120px, 18vh, 200px); }
+.work__also-list { margin: 14px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line-dark); }
+.work__also-list li {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  padding-block: 16px 18px;
+  border-bottom: 1px solid var(--line-dark);
+  color: var(--text-on-dark-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.work__also-list li > :nth-child(1) { grid-column: 1 / 3; color: var(--text-on-dark); font: 400 1.0625rem/1.4 var(--font-display); letter-spacing: -0.01em; }
+.work__also-list li > :nth-child(2) { grid-column: 3 / 6; }
+.work__also-list li > :nth-child(3) { grid-column: 6 / -1; }
+
+/* Unused since 25 Oct (MA'LOA only): layouts 02 and 03, kept for the markup in
+   docs/aik-studio/archive/selected-work-three-projects-v6.html. */
+/* 02 — medium: tall photograph on the left, the name stacked at its foot. */
+.project--b .project__body { margin-top: 40px; align-items: end; }
+.project--b .project__media { grid-column: 1 / 6; aspect-ratio: 4 / 5; }
+.project--b .project__media img { object-position: 50% 62%; }
+.project--b .project__text { grid-column: 7 / -1; }
+.project--b .project__name { font-size: clamp(3rem, 8.2vw, 9rem); line-height: 0.84; }
+.project--b .project__name .l { display: block; }
+.project--b .project__name .l + .l { padding-left: 0.9em; }
+.project--b .project__facts { margin-top: 44px; max-width: 480px; }
+
+/* 03 — the smallest frame (low-resolution photographs) over ghost numerals
+   that run off the left edge. */
+.project--c .project__stage { position: relative; margin-top: 24px; }
+.project--c .project__body { position: relative; padding-top: 7vw; }
+.project__ghost {
+  position: absolute;
+  left: calc(-1 * var(--margin) - 0.04em); top: -0.06em;
+  color: var(--text-ghost);
+  font: 300 20vw/0.8 var(--font-display);
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.project--c .project__media { grid-column: 7 / 12; aspect-ratio: 828 / 560; max-width: 600px; z-index: 1; }
+.project--c .project__text { grid-column: 7 / 12; margin-top: 36px; }
+.project--c .project__name { font-size: clamp(2.2rem, 3.6vw, 3.8rem); line-height: 0.95; }
+.project--c .project__facts { margin-top: 28px; }
+
+/* ------------------------------------------------------------ reveal */
+/* The shared rise is in site.css. Photographs open from below instead of rising. */
+.reveal-on .work .project__media[data-reveal] {
+  transform: none;
+  clip-path: inset(14% 0 0 0);
+  transition: opacity var(--dur-base) var(--ease-out), clip-path var(--dur-slow) var(--ease-out);
+}
+.reveal-on .work .project__media[data-reveal]:not(.is-in) img { transform: scale(1.08); }
+.reveal-on .work .project__media[data-reveal].is-in { clip-path: inset(0 0 0 0); }
+.reveal-on .work .project__text[data-reveal],
+.reveal-on .work .project__aside[data-reveal] { --i: 1; }
+
+/* ------------------------------------------------------------ scroll-linked drift
+   Progressive enhancement: only where CSS scroll timelines exist (Chrome 115+,
+   Safari 26) and motion is welcome. Elsewhere photograph and fog stay still.
+   The drift uses `translate`, so the reveal and hover `transform` are untouched. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .project--a .project__media:not(.project__detail) img {
+      scale: 1.1;                          /* overscan: the drift never shows the frame */
+      animation: work-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+    .work__fog {
+      animation: work-fog linear both;
+      animation-timeline: view();
+      animation-range: cover 50% cover 100%;
+    }
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (max-width: 760px) {
+    .project--a .project__media:not(.project__detail) img { scale: 1.06; animation-name: work-drift-sm; }
+  }
+}
+@keyframes work-drift { from { translate: 0 4%; } to { translate: 0 -4%; } }
+@keyframes work-drift-sm { from { translate: 0 2%; } to { translate: 0 -2%; } }
+@keyframes work-fog { from { translate: 0 0; opacity: 0.2; } to { translate: 0 -8%; opacity: 0.06; } }
+
+/* ------------------------------------------------------------ phones, tablets */
+@media (max-width: 760px) {
+  .work { padding-block: 104px 128px; }
+  .work__row { grid-template-columns: 1fr 1fr; }
+  .work__row > :nth-child(2) { display: none; }
+
+  /* Four short lines, the ghost word indented, the lead after the heading. */
+  .work__title { display: flex; flex-direction: column; font-size: 17.4vw; line-height: 0.88; }
+  .work__title .l2 { display: contents; }
+  .work__title .l2 em { order: 2; padding-left: 1.2em; }
+  .work__title .l3 { order: 3; }
+  .work__title .l3 > span { display: block; }
+  .work__lead { order: 4; margin-top: 32px; font-size: 1rem; }
+
+  .work__list > li + li { margin-top: 120px; }
+  .project__body { display: block; }
+
+  .project--a .project__name { margin-top: 22px; }
+  .project--a .project__media { margin-inline: calc(-1 * var(--margin)); }
+  .project--a .project__text { margin-top: 26px; padding: 0; }
+  .project--a .project__detail { width: 64%; margin: 56px 0 0 auto; }
+  .project--a .project__aside { margin-top: 22px; }
+
+  .work__also { margin-top: 104px; }
+  .work__also-list li { display: block; }
+  .work__also-list li > * { display: block; }
+  .work__also-list li > :nth-child(1) { margin-bottom: 6px; }
+
+  .project--b .project__body { display: flex; flex-direction: column; margin-top: 22px; }
+  .project--b .project__text { display: contents; }
+  .project--b .project__name { order: 1; align-self: flex-start; font-size: 15.6vw; position: relative; z-index: 1; }
+  .project--b .project__media { order: 2; width: 84%; margin: 20px calc(-1 * var(--margin)) 0 auto; }
+  .project--b .project__facts { order: 3; margin-top: 26px; }
+  .project--b .project__note { order: 4; }
+
+  .project--c .project__body { padding-top: 22vw; }
+  .project--c .project__media { width: 78%; margin-left: auto; }
+  .project--c .project__text { margin-top: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project__media img { transition: none !important; }
+  .project__media:hover img { transform: scale(1.001); }
+}

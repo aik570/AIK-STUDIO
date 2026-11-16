@@ -1,0 +1,173 @@
+/* AIK Studio — loader ("Ascent").
+   Load:   the outline of the mountains is traced and the horizon line grows
+           with the real loading progress; the counter reads it out.
+   Ready:  polished metal rises into the outline, a band of light runs across
+           it, STUDIO is set letter by letter.
+   Leave:  the horizon flares and the screen opens along it, top and bottom.
+   Repeat visits in the same tab get a short version. Reduced motion: no
+   tracing, no sweep, a plain cross-fade. */
+
+html.is-loading, html.is-loading body { overflow: hidden; }
+
+.aik-loader {
+  --p: 0;                                   /* progress 0..1, set by js/loader.js */
+  --ink: #07080a;
+  --line: 222 227 236;
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-io: cubic-bezier(.76, 0, .24, 1);
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  color: rgb(var(--line));
+  pointer-events: auto;
+  contain: strict;
+}
+.aik-loader[hidden] { display: none; }
+
+/* The two halves of the screen; they part along the horizon on exit. */
+.aik-loader__panel {
+  position: absolute;
+  left: 0; right: 0;
+  height: calc(var(--horizon) + 1px);
+  background: var(--ink);
+  transition: transform .6s var(--ease-io);
+  will-change: transform;
+}
+.aik-loader { --horizon: 50%; }
+.aik-loader__panel--top    { top: 0; }
+.aik-loader__panel--bottom { bottom: 0; height: calc(100% - var(--horizon) + 1px); }
+.aik-loader__panel--top::after {                 /* faint cold light from above */
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(60% 55% at 50% 100%, rgb(120 135 160 / .10), transparent 70%);
+}
+
+.aik-loader__mark {
+  position: relative;
+  width: min(60vw, 760px, 118vh);
+  aspect-ratio: 1914 / 1032;
+  transition: transform 1.2s var(--ease-io), opacity .9s ease, filter 1.1s ease;
+}
+@media (max-aspect-ratio: 4/5) { .aik-loader__mark { width: 82vw; } }
+
+.aik-loader svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* 1 — outline traced by progress */
+.aik-loader__outline path {
+  fill: none;
+  stroke: rgb(var(--line) / .78);
+  stroke-width: 1.25px;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: calc(1 - var(--p));
+  filter: drop-shadow(0 0 3px rgb(var(--line) / .35));
+  transition: opacity .9s ease .25s;
+}
+
+/* 2 — metal rising into the outline (a clip rect grows from the base) */
+.aik-loader__rise {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: scaleY(0);
+  transition: transform 1.25s var(--ease-out);
+}
+.aik-loader__sweep {
+  transform-box: fill-box;
+  transform: translateX(-100%);
+  mix-blend-mode: plus-lighter;
+}
+
+/* 3 — STUDIO, letter by letter */
+.aik-loader__letter {
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity .7s ease, transform .9s var(--ease-out);
+  transition-delay: calc(.55s + var(--i) * 70ms);
+}
+
+/* the horizon = the progress line */
+.aik-loader__horizon {
+  position: absolute;
+  left: 50%; top: var(--horizon);
+  width: min(78vw, 980px);
+  height: 1px;
+  translate: -50% -50%;
+  background: linear-gradient(90deg, transparent, rgb(var(--line) / .9) 18%, #fff 50%, rgb(var(--line) / .9) 82%, transparent);
+  transform: scaleX(var(--p));
+  box-shadow: 0 0 12px rgb(var(--line) / .45);
+  transition: transform .2s linear, opacity .6s ease, width 1.1s var(--ease-io);
+}
+
+.aik-loader__meta {
+  position: absolute;
+  left: clamp(20px, 4vw, 56px); right: clamp(20px, 4vw, 56px);
+  bottom: clamp(20px, 4.5vh, 48px);
+  display: flex; justify-content: space-between; align-items: baseline;
+  font: 400 11px/1 "Space Grotesk", system-ui, sans-serif;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: rgb(var(--line) / .55);
+  transition: opacity .6s ease;
+}
+.aik-loader__count {
+  font-size: 13px;
+  letter-spacing: .12em;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--line) / .85);
+}
+
+/* ---------------- ready */
+.aik-loader.is-ready .aik-loader__rise   { transform: none; }
+.aik-loader.is-ready .aik-loader__outline path { opacity: 0; }
+.aik-loader.is-ready .aik-loader__sweep  { animation: aik-sweep 1.5s cubic-bezier(.45, 0, .2, 1) .55s forwards; }
+.aik-loader.is-ready .aik-loader__letter { opacity: 1; transform: none; }
+.aik-loader.is-ready .aik-loader__meta   { opacity: 0; }
+@keyframes aik-sweep { to { transform: translateX(100%); } }
+
+/* ---------------- leave */
+.aik-loader.is-leaving { pointer-events: none; }
+.aik-loader.is-leaving .aik-loader__mark { transform: scale(1.06) translateY(-1.5%); opacity: 0; filter: blur(6px); }
+.aik-loader.is-leaving .aik-loader__horizon { width: 160vw; animation: aik-flare 1.1s ease forwards; }
+.aik-loader.is-leaving .aik-loader__panel--top    { transform: translateY(-101%); transition-delay: .25s; }
+.aik-loader.is-leaving .aik-loader__panel--bottom { transform: translateY(101%);  transition-delay: .25s; }
+@keyframes aik-flare {
+  0%   { opacity: 1; filter: brightness(1); }
+  30%  { opacity: 1; filter: brightness(2.2); box-shadow: 0 0 28px rgb(var(--line) / .9); }
+  100% { opacity: 0; }
+}
+
+/* ---------------- short version (repeat visit in this tab) */
+.aik-loader.is-quick .aik-loader__rise   { transition-duration: .7s; }
+.aik-loader.is-quick .aik-loader__letter { transition-delay: calc(.15s + var(--i) * 40ms); }
+.aik-loader.is-quick.is-ready .aik-loader__sweep { animation-delay: .1s; animation-duration: .9s; }
+
+/* ---------------- reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .aik-loader__outline { display: none; }
+  .aik-loader__rise { transform: none; transition: none; }
+  .aik-loader__metal { opacity: 0; transition: opacity .6s ease; }
+  .aik-loader__sweep { display: none; }
+  .aik-loader__letter { transform: none; transition-delay: 0s; }
+  .aik-loader.is-ready .aik-loader__metal { opacity: 1; }
+  .aik-loader.is-leaving .aik-loader__mark { transform: none; filter: none; }
+  .aik-loader__panel { transition: opacity .6s ease; }
+  .aik-loader.is-leaving .aik-loader__panel { transform: none; opacity: 0; transition-delay: 0s; }
+  .aik-loader.is-leaving .aik-loader__horizon { animation: none; opacity: 0; }
+}
+
+/* ---------------- WebGL scene (js/loader-gl.js) */
+.aik-loader__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.aik-loader.is-gl .aik-loader__panel,
+.aik-loader.is-gl .aik-loader__mark { display: none; }
+.aik-loader.is-gl { background: transparent; }
+.aik-loader.is-gl .aik-loader__horizon {
+  width: min(70vw, 900px);
+  background: linear-gradient(90deg, transparent, rgb(var(--line) / .7) 20%, #fff 50%, rgb(var(--line) / .7) 80%, transparent);
+  box-shadow: 0 0 10px rgb(var(--line) / .35);
+}
+.aik-loader.is-gl.is-leaving .aik-loader__horizon { opacity: 0; transition: opacity .2s ease .15s; }
+.aik-loader.is-gl.is-leaving .aik-loader__horizon { animation: none; }
+.aik-loader.is-gl .aik-loader__meta { color: rgb(var(--line) / .5); }

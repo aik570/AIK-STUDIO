@@ -1,0 +1,140 @@
+/* ============================================================ Design system v3 (16 Nov)
+   Two tones, one loud headline face, a hard dark / light rhythm, one idea per section.
+   The mountain world stays where it is the brand: Hero and Contact. Loaded last. */
+
+:root { --paper: #eef1f3; --ink: #0d1116; --card: #151a20; --r: clamp(20px, 2.4vw, 34px); --snap: cubic-bezier(.23, 1, .32, 1); }
+
+/* ------------------------------------------------------------ rhythm */
+.world { display: none; }
+main { position: relative; z-index: 1; background: var(--obsidian); }
+.v2 { background: var(--obsidian); }
+
+.is-light, #services, #faq {
+  --ice: var(--ink); --snow: var(--ink); --mist: rgb(13 17 22 / .74); --steel-light: rgb(13 17 22 / .52);
+  --hair: rgb(13 17 22 / .14); --obsidian: var(--paper); --champagne: #7a6444;
+  background: var(--paper); color: var(--ink); border-radius: var(--r);
+}
+#services h2 em, #faq h2 em { color: rgb(13 17 22 / .5); }
+
+/* ------------------------------------------------------------ type: one voice, louder */
+h2.serif, .contact2 h2, .answer p.serif { font-family: var(--font-display); font-weight: 500; letter-spacing: -.045em; line-height: .94; }
+h2.serif em, .contact2 h2 em, .answer p.serif em { font-family: inherit; font-style: normal; font-weight: 500; letter-spacing: inherit; color: rgb(230 235 239 / .42); padding: 0; }
+h2.serif { font-size: clamp(3rem, 7.6vw, 8.6rem); }
+.v2 h3 { font-weight: 500; letter-spacing: -.02em; }
+body { font-size: 1.0625rem; }
+.idx .r { display: none; }
+.idx { color: var(--steel-light); }
+
+/* ------------------------------------------------------------ pills, fast response */
+.cta, .pack__go, .h3btn--solid { border-radius: 999px; }
+.cta, .pack__go, .h3btn, .seg button, .faq summary { transition-duration: .2s; transition-timing-function: var(--snap); }
+.cta::before { border-radius: inherit; }
+.cta:active, .pack__go:active, .h3btn--solid:active { transform: scale(.97); }
+
+/* ------------------------------------------------------------ removed chrome */
+.cursor { display: none !important; }
+.site-header::after { display: none; }
+.pack { transform: none !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.pack::after { display: none; }
+
+/* ------------------------------------------------------------ marquee: two rows, filled and outline */
+.work2 > .marquee { border: 0; padding-block: clamp(28px, 5vh, 56px) 0; margin-bottom: clamp(60px, 10vh, 120px); display: grid; gap: 4px; }
+.marquee__track span { font: 600 clamp(2.4rem, 5.4vw, 5.6rem)/1.05 var(--font-display) !important; font-style: normal !important; letter-spacing: -.04em; color: var(--ice) !important; -webkit-text-stroke: 0 !important; padding-inline: .32em; }
+.marquee__track span::after { content: "·"; margin-left: .64em; opacity: .5; }
+.marquee__track--b { animation-direction: reverse; animation-duration: 52s; }
+.marquee__track--b span { color: transparent !important; -webkit-text-stroke: 1px rgb(230 235 239 / .6) !important; }
+
+/* ------------------------------------------------------------ work */
+.reel::after { background: linear-gradient(90deg, var(--obsidian), transparent 14%, transparent 86%, var(--obsidian)); }
+.case .name { font-weight: 500; }
+
+/* ------------------------------------------------------------ problem: cards stack as you scroll */
+.offer__grid { align-items: start; }
+.pains { border: 0; display: grid; gap: 14px; padding-bottom: 6vh; }
+.pains li { position: sticky; top: calc(16vh + var(--i, 0) * 16px); grid-template-columns: 1fr; gap: 0; padding: clamp(24px, 2.6vw, 38px); min-height: clamp(180px, 26vh, 250px); border: 0; border-radius: var(--r); background: var(--card); box-shadow: 0 -18px 40px -22px rgb(0 0 0 / .8), inset 0 0 0 1px rgb(230 235 239 / .08); align-content: space-between; }
+.pains li:nth-child(1) { --i: 0; } .pains li:nth-child(2) { --i: 1; } .pains li:nth-child(3) { --i: 2; }
+.pains li:nth-child(4) { --i: 3; background: var(--paper); color: var(--ink); }
+.pains li:nth-child(4) p, .pains li:nth-child(4) .n { color: rgb(13 17 22 / .7); }
+.pains .n { font-size: .8rem; }
+.pains h3 { font-size: clamp(1.7rem, 2.6vw, 2.6rem); line-height: 1; margin-top: 18px; }
+.stat { border: 0; padding-left: 0; top: 16vh; }
+.stat__num { font-weight: 500; }
+.answer { margin-top: clamp(70px, 11vh, 130px); }
+.answer p.serif { font-size: clamp(2.2rem, 4.6vw, 5rem); }
+
+/* ------------------------------------------------------------ system: three plain columns */
+.climb::before, .climb::after, .climb li::before { display: none; }
+.climb { gap: 14px; }
+.climb li { padding: clamp(24px, 2.6vw, 38px); border-radius: var(--r); background: var(--card); box-shadow: inset 0 0 0 1px rgb(230 235 239 / .08); min-height: clamp(260px, 36vh, 360px); display: flex; flex-direction: column; }
+.climb .big { position: static; font: 500 clamp(3rem, 5.4vw, 5.6rem)/.9 var(--font-display); letter-spacing: -.05em; margin-bottom: auto; }
+.climb h3 { margin-top: 28px; font-size: 1.5rem; }
+
+/* ------------------------------------------------------------ process: one step per screen, giant numeral */
+.process { padding-bottom: var(--pad); }
+.process__intro { grid-template-columns: 1fr; gap: 26px; }
+.process__intro h2 { max-width: 14ch; }
+.steps { display: block; margin-top: clamp(50px, 8vh, 90px); padding: 0; }
+.step { position: sticky; top: 11vh; display: grid; grid-template-columns: 1.05fr 1fr; grid-template-rows: auto 1fr auto; column-gap: clamp(24px, 5vw, 90px); min-height: 74vh; margin-bottom: 14px; padding: clamp(26px, 3vw, 46px); border: 0; border-radius: var(--r); background: var(--card); box-shadow: 0 -22px 50px -24px rgb(0 0 0 / .85), inset 0 0 0 1px rgb(230 235 239 / .08); flex: none; }
+.step:nth-child(even) { background: #1b2129; }
+.step:last-child { background: var(--paper); color: var(--ink); --ice: var(--ink); --mist: rgb(13 17 22 / .74); --steel-light: rgb(13 17 22 / .55); }
+.step .top { grid-column: 1 / -1; }
+.step .num { grid-column: 1; grid-row: 2 / 4; align-self: end; margin: 0; font: 600 clamp(9rem, 25vw, 25rem)/.74 var(--font-display); letter-spacing: -.07em; color: inherit; }
+.step h3 { grid-column: 2; grid-row: 2; align-self: end; margin: 0; font-size: clamp(2rem, 3.6vw, 3.8rem); line-height: .98; letter-spacing: -.04em; }
+.step p { grid-column: 2; margin-top: 18px; max-width: 34ch; font-size: 1.15rem; }
+.step .you { grid-column: 2; margin-top: 22px; }
+.step .top span:first-child { display: none; }
+
+/* ------------------------------------------------------------ prices on paper */
+#services { padding-block: clamp(80px, 12vh, 150px); }
+.packs { gap: 14px; margin-top: clamp(44px, 7vh, 80px); }
+.pack { background: #fff; border: 0; border-radius: var(--r); box-shadow: 0 1px 0 rgb(13 17 22 / .06); }
+.pack:hover { background: #fff; border: 0; }
+.pack.hot { --ice: #eef1f3; --mist: rgb(238 241 243 / .78); --steel-light: rgb(238 241 243 / .56); --hair: rgb(238 241 243 / .16); --obsidian: var(--ink); background: var(--ink); color: #eef1f3; box-shadow: 0 30px 60px -30px rgb(13 17 22 / .6); translate: 0 -14px; }
+.pack h3 { font-weight: 500; }
+.pack .price { font-weight: 500; font-size: 1.7rem; letter-spacing: -.03em; }
+.badge { border-radius: 999px; }
+.calc { background: #fff; border: 0; border-radius: var(--r); overflow: hidden; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.calc h3 { font: 500 2.2rem/1 var(--font-display); letter-spacing: -.03em; }
+.calc__price { font-weight: 500; }
+
+/* ------------------------------------------------------------ why */
+.reasons { gap: 14px; background: none; border: 0; }
+.reasons li { border-radius: calc(var(--r) * .7); background: var(--card); box-shadow: inset 0 0 0 1px rgb(230 235 239 / .08); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.founder { border: 0; border-radius: var(--r); }
+.founder .nm, .compare tr.us td:first-child { font-weight: 500; }
+
+/* ------------------------------------------------------------ faq on paper */
+#faq { padding-block: clamp(80px, 12vh, 150px); margin-top: 14px; }
+.faq summary { font-weight: 500; }
+
+/* ------------------------------------------------------------ contact keeps the mountains */
+.contact2 { background: var(--obsidian) url("../media/bg/s-dawn.webp") 50% 40% / cover no-repeat; }
+.contact2::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, var(--obsidian), rgb(13 17 22 / .25) 26%, rgb(13 17 22 / .6) 62%, var(--obsidian)); }
+.contact2 h2 { font-weight: 500; }
+
+/* ------------------------------------------------------------ words light up as you read */
+[data-read] .w { opacity: .22; transition: opacity .35s linear; }
+[data-read] .w.on { opacity: 1; }
+
+/* ------------------------------------------------------------ footer slides out from under the page */
+.foot { background: #090c10; -webkit-backdrop-filter: none; backdrop-filter: none; border: 0; }
+.foot__mega { font-weight: 600; color: var(--ice); -webkit-text-stroke: 0; letter-spacing: -.06em; }
+@media (min-width: 961px) and (min-height: 700px) { .foot { position: sticky; bottom: 0; z-index: 0; } .v2 { z-index: 1; } .contact2 { border-radius: 0 0 var(--r) var(--r); box-shadow: 0 30px 60px rgb(0 0 0 / .7); } }
+
+@media (max-width: 960px) {
+  .pains li { position: relative; top: auto; min-height: 0; }
+  .climb { grid-template-columns: 1fr; }
+  .climb li { min-height: 0; }
+  .step { position: relative; top: auto; grid-template-columns: 1fr; min-height: 0; }
+  .step .num { grid-column: 1; grid-row: auto; font-size: 8rem; margin: 26px 0 18px; }
+  .step h3, .step p, .step .you { grid-column: 1; grid-row: auto; }
+  .pack.hot { translate: none; }
+  h2.serif { font-size: clamp(2.6rem, 11.5vw, 4.4rem); }
+}
+@media (prefers-reduced-motion: reduce) { [data-read] .w { opacity: 1; } .pains li, .step { position: relative; top: auto; } }
+
+/* process: retire the horizontal pin wrappers */
+.js .process__pin { height: auto; }
+.js .process__sticky { position: static; height: auto; display: block; overflow: visible; }
+/* header: a solid dark bar once past the Hero, so it reads on paper sections too */
+.site-header.is-past { background: rgb(11 14 18 / .82); -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4); border-bottom: 1px solid rgb(230 235 239 / .08); }

@@ -1,0 +1,16 @@
+{
+  "name": "aik-studio-site",
+  "private": true,
+  "description": "AIK Studio website: plain HTML, CSS and JavaScript. No build step; these scripts only serve and test it.",
+  "scripts": {
+    "serve": "python3 -m http.server 8765",
+    "test": "playwright test",
+    "test:visual": "playwright test --grep @visual",
+    "audit:lighthouse": "node tests/lighthouse.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.11.0",
+    "@playwright/test": "1.56.1",
+    "lighthouse": "12.8.2"
+  }
+}
