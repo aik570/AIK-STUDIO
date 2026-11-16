@@ -6,20 +6,20 @@
 <title>AIK Studio — Premium websites for ambitious businesses</title>
 <link rel="icon" type="image/png" sizes="48x48" href="./media/logo/icon-48.png">
 <link rel="apple-touch-icon" href="./media/logo/icon-180.png">
-<meta name="theme-color" content="#0d1116">
+<meta name="theme-color" content="#0a0a0a">
 <meta property="og:type" content="website">
 <meta property="og:title" content="AIK Studio — Premium websites for ambitious businesses">
 <meta property="og:description" content="AIK Studio redesigns websites for established businesses in Potsdam, Berlin and across Germany — turnkey, fast and built to turn visitors into enquiries.">
 <meta property="og:image" content="./media/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="description" content="AIK Studio redesigns websites for established businesses in Potsdam, Berlin and across Germany — turnkey, fast and built to turn visitors into enquiries.">
-<meta name="theme-color" content="#101419">
 <link rel="alternate" hreflang="en" href="./">
 <link rel="alternate" hreflang="de" href="./de/">
 <link rel="alternate" hreflang="x-default" href="./">
-<link rel="preload" href="./fonts/outfit-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/bowlby-one-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="./media/loader/aik-lockup.webp" fetchpriority="high">
-<link rel="preload" as="image" href="./media/hero/hero3-plate-1920.webp" imagesrcset="./media/hero/hero3-plate-1280.webp 1280w, ./media/hero/hero3-plate-1920.webp 1920w, ./media/hero/hero3-plate-2880.webp 2880w, ./media/hero/hero3-plate-3840.webp 3840w" imagesizes="104vw" fetchpriority="high">
+<link rel="preload" as="image" href="./media/hero4/plate-1920.webp" imagesrcset="./media/hero4/plate-1280.webp 1280w, ./media/hero4/plate-1920.webp 1920w, ./media/hero4/plate-2880.webp 2880w, ./media/hero4/plate-3840.webp 3840w" imagesizes="(min-aspect-ratio: 16/9) 100vw, 112vw" media="(min-width: 761px), (orientation: landscape)" fetchpriority="high">
+<link rel="preload" as="image" href="./media/hero4/plate-portrait-900.webp" imagesrcset="./media/hero4/plate-portrait-900.webp 900w, ./media/hero4/plate-portrait-1400.webp 1400w" imagesizes="100vw" media="(max-width: 760px) and (orientation: portrait)" fetchpriority="high">
 <link rel="stylesheet" href="./css/loader.css">
 <link rel="stylesheet" href="./css/site.css">
 <link rel="stylesheet" href="./css/hero-flight.css">
@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="./css/craft.css">
 <link rel="stylesheet" href="./css/system3.css">
 <link rel="stylesheet" href="./css/v4.css">
+<link rel="stylesheet" href="./css/hero4.css">
 <script>
   document.documentElement.classList.add('is-loading');
   /* The cinematic opening is opt-in and decided before first paint.
@@ -87,24 +88,28 @@
 </header>
 
 <main id="main">
-  <section class="hero3" id="top" aria-labelledby="hero-title" data-media="./media/hero/">
-    <div class="hero3__stage">
-      <div class="hero3__plate"><img src="./media/hero/hero3-plate-1920.webp" srcset="./media/hero/hero3-plate-1280.webp 1280w, ./media/hero/hero3-plate-1920.webp 1920w, ./media/hero/hero3-plate-2880.webp 2880w, ./media/hero/hero3-plate-3840.webp 3840w" sizes="104vw" alt="Glass AIK letters between snowy peaks above a sea of clouds at sunset" width="1920" height="1060" fetchpriority="high" decoding="async"></div>
-      <div class="hero3__sun" aria-hidden="true"></div>
-      <div class="hero3__sweep" aria-hidden="true"></div>
-      <div class="hero3__veil" aria-hidden="true"></div>
-      <div class="hero3__copy">
-        <p class="hero3__eyebrow" data-in style="--d:0"><i></i><span>Digital experiences<br>built with intention</span></p>
-        <h1 class="hero3__title" id="hero-title"><span class="visually-hidden">AIK Studio — </span><span><span class="" style="--d:0">Your business</span></span><span><span class="dim" style="--d:120">deserves</span></span><span><span class="strong" style="--d:240">a better website.</span></span></h1>
-        <p class="hero3__lead" data-in style="--d:420">We turn your business into a digital experience that builds trust, communicates value and moves people to act.</p>
-        <div class="hero3__ctas" data-in style="--d:560">
-          <a class="h3btn h3btn--solid" href="#contact">Discuss your project <span aria-hidden="true">→</span></a>
-          <a class="h3btn h3btn--play" href="#work"><i aria-hidden="true"></i>Explore our work</a>
+  <section class="hx" id="top" aria-labelledby="hero-title" data-media="./media/hero4/" data-plate="{&quot;portrait_x0&quot;:0.24479166666666666,&quot;portrait_w&quot;:0.3104166666666667,&quot;aspect&quot;:1.8113207547169812}" data-glass="{&quot;w&quot;:1680,&quot;h&quot;:711,&quot;pad&quot;:40,&quot;inner&quot;:[1600,631]}" data-film="./media/hero/flight-1920.mp4">
+    <div class="hx__stage">
+      <div class="hx__scene">
+        <picture class="hx__plate">
+          <source media="(max-width: 760px) and (orientation: portrait)" srcset="./media/hero4/plate-portrait-900.webp 900w, ./media/hero4/plate-portrait-1400.webp 1400w" sizes="100vw">
+          <img src="./media/hero4/plate-1920.webp" srcset="./media/hero4/plate-1280.webp 1280w, ./media/hero4/plate-1920.webp 1920w, ./media/hero4/plate-2880.webp 2880w, ./media/hero4/plate-3840.webp 3840w" sizes="(min-aspect-ratio: 16/9) 100vw, 112vw" alt="Snowy peaks above a sea of clouds at sunset" width="1920" height="1060" fetchpriority="high" decoding="async">
+        </picture>
+        <div class="hx__mark" aria-hidden="true" style="aspect-ratio: 1600 / 631"><img class="hx__glassimg" src="./media/hero4/glass-fallback.webp" alt="" width="1600" height="631" decoding="async"></div>
+        <div class="hx__shade" aria-hidden="true"></div>
+      </div>
+      <div class="hx__copy">
+        <p class="hx__kicker" data-in style="--d:60"><i aria-hidden="true"></i>Premium websites for ambitious businesses</p>
+        <h1 class="hx__title" id="hero-title"><span class="visually-hidden">AIK Studio: </span><span class="hx__line"><span style="--d:160">Websites that</span></span><span class="hx__line"><span style="--d:270">bring you clients.</span></span></h1>
+        <div class="hx__side">
+          <p class="hx__lead" data-in style="--d:420">Redesign, copy, development, SEO, Impressum and privacy policy. One studio does all of it, from Berlin and Potsdam.</p>
+          <div class="hx__ctas" data-in style="--d:520">
+            <a class="hx__btn hx__btn--solid" href="#contact">Get a quote <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <a class="hx__btn hx__btn--ghost" href="#work">See the work</a>
+          </div>
         </div>
       </div>
-      <a class="hero3__scroll" href="#work" data-in style="--d:800"><span>Scroll<b aria-hidden="true">↓</b></span></a>
-      <ol class="hero3__pillars"><li data-in style="--d:900"><b>01</b><span>Strategy</span></li><li data-in style="--d:990"><b>02</b><span>UI/UX Design</span></li><li data-in style="--d:1080"><b>03</b><span>Development</span></li><li data-in style="--d:1170"><b>04</b><span>Growth</span></li></ol>
-      <button class="hero3__skip" type="button">Skip intro</button>
+      <button class="hx__skip" type="button">Skip intro</button>
     </div>
   </section>
 
@@ -235,7 +240,7 @@
 </main>
 
 <script src="./js/site.js" defer></script>
-<script src="./js/hero3.js" defer></script>
+<script src="./js/hero4.js" defer></script>
 <script src="./js/v2.js" defer></script>
 <script src="./js/curve-reel.js" defer></script>
 <script src="./js/craft.js" defer></script>

@@ -2,7 +2,7 @@
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  const base = (document.querySelector('.hero3') || {}).dataset?.media?.replace('hero/', '') || './media/';
+  const base = (document.querySelector('.hx, .hero3') || {}).dataset?.media?.replace(/hero\d?\/$/, '') || './media/';
 
   /* ---------------------------------------------------------- one world
      One fixed scene behind every section. It changes as you travel down the page:

@@ -342,7 +342,7 @@ for lang, path in [("en", "index.html"), ("de", "de/index.html")]:
     c = T[lang]
     fp = f"{ROOT}/{path}"
     s = open(fp).read()
-    a = s.index('</section>', re.search(r'<section class="hero[23]"', s).start()) + len('</section>')
+    a = s.index('</section>', re.search(r'<section class="(?:hero[234]|hx)"', s).start()) + len('</section>')
     e = s.index('</main>')
     s = s[:a] + "\n" + build(c) + s[e:]
     # header nav
