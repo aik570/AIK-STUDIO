@@ -1,0 +1,622 @@
+"""AIK Studio: writes index.html (EN) and de/index.html (DE) in full from one content table.
+
+    python3 tools/build_site.py .
+
+Structure (approved, do not reorder): Hero → Work → Problem → System → Process →
+Services & prices + calculator → Why AIK → Questions → Contact → footer.
+Plus: the six-step enquiry (dialog), the floating "Start a project" button.
+
+Facts only: prices are the owner's own ranges, concepts are labelled as concepts,
+no invented clients, numbers or testimonials. The owner's e-mail is NOT on the page
+(not approved); enquiries go through Netlify Forms (the notification address is set in
+the Netlify dashboard) or WhatsApp."""
+import html, json, re, sys
+from pathlib import Path
+
+ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else '.')
+PLATE = json.loads((ROOT / 'media/hero4/plate.json').read_text())
+LOADER = (ROOT / 'tools/partials/loader.html').read_text()
+
+WA = '4915221595565'
+WA_SHOW = '+49 1522 1595565'
+SOCIAL = [('WhatsApp', f'https://wa.me/{WA}'), ('Telegram', 'https://t.me/Koliayounow'),
+          ('Instagram', 'https://www.instagram.com/kolia_sb/'), ('LinkedIn', 'https://www.linkedin.com/in/nikolay-riabov-202920422')]
+
+# AIK, drawn from the logo outline (media/loader: the mark's own vector trace), cleaned to straight edges.
+AIK_VIEWBOX = '262 274 1348 534'
+AIK_PATHS = [
+    'M611 413 L872 800 L775 800 L705 690 L562 690 L591 651 L676 651 L611 548 L401 800 L277 800 Z',   # A
+    'M918 283 L1001 342 L1001 800 L918 800 Z',                                                          # I
+    'M1095 411 L1176 411 L1176 800 L1095 800 Z',                                                        # K stem
+    'M1176 584 L1425 369 L1500 418 L1316 573 L1595 800 L1474 800 L1196 588 L1176 603 Z',               # K arms
+]
+
+ARROW = '<span class="btn__arrow" aria-hidden="true">→</span>'
+OUT = '<span class="btn__arrow" aria-hidden="true">↗</span>'
+CHECK = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+PLUS = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'
+CLOSE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3 3 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'
+PHONE = '<svg class="ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M6.6 2.5 8.4 6c.2.4.1.9-.2 1.2L6.9 8.4a9.6 9.6 0 0 0 4.7 4.7l1.2-1.3c.3-.3.8-.4 1.2-.2l3.5 1.8c.4.2.6.7.5 1.1l-.5 2.1c-.1.5-.6.9-1.1.9A14.7 14.7 0 0 1 1.5 2.6c0-.5.4-1 .9-1.1l2.1-.5c.5-.1.9.1 1.1.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>'
+BUBBLE = '<svg class="ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5c4.4 0 7.5 2.9 7.5 6.6s-3.1 6.6-7.5 6.6c-.9 0-1.7-.1-2.5-.3L3.5 17l1-3.3A6.3 6.3 0 0 1 2.5 9.1C2.5 5.4 5.6 2.5 10 2.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>'
+
+T = {
+'en': dict(
+  lang='en', b='./', other='./de/', loading='Loading AIK Studio',
+  title='AIK Studio | Premium websites for businesses in Berlin and Potsdam',
+  desc='AIK Studio plans, writes, designs and builds websites for businesses in Berlin, Potsdam and across Germany. Redesign, new sites, SEO, Impressum and Datenschutz. Prices from 900 €.',
+  skip='Skip to content', menu='Menu', close='Close',
+  nav=[('#work', 'Work'), ('#services', 'Services'), ('#process', 'Approach'), ('#why', 'About'), ('#contact', 'Contact')],
+  talk='Let’s talk', start='Start a project', pause='Pause motion', play='Resume motion',
+  hero=dict(kicker=['Digital experiences', 'built with intention'], h=['Your business', 'deserves', 'a better website.'],
+    lead='We turn your business into a digital experience that builds trust, communicates value and moves people to act.',
+    cta1='Discuss your project', cta2='Explore our work', skip='Skip intro',
+    stages=['Strategy', 'UX design', 'Development', 'Growth'],
+    alt='Three snowy peaks above a sea of clouds at sunset'),
+  marquee=['Websites', 'Redesign', 'Landing pages', 'SEO', 'Copy', 'Care'],
+  work=dict(title='Selected work', note='Concepts are labelled as concepts. Live sites open in a new tab.', live='View live', concept='Concept', site='Website', drag='Drag or scroll',
+    cases=[('MA’LOA', 'Restaurants · Eschborn', 'concept', 'Homepage and franchise page for a Hawaiian poké bowl chain. Self-initiated concept, not the live maloa.com.', 'maloa-hero', 'https://maolaheropage.netlify.app/'),
+           ('BLF Service', 'Trees & land · Seddiner See', 'site', 'Website for a tree, land and forestry service: services all year round, enquiries and jobs.', 'blf-service', 'https://lucky-parfait-f6d633.netlify.app/'),
+           ('Architekturcontor', 'Architecture · Potsdam', 'concept', 'Redesign concept for an architecture office focused on schools: project catalogue and a four-step enquiry.', 'architekturcontor', 'https://nimble-hummingbird-a98d10.netlify.app/'),
+           ('Gute Räume', 'Interior design · Potsdam', 'concept', 'Concept for a studio for spatial concepts and circular interior design.', 'raum-studio', 'https://helpful-otter-6da26b.netlify.app/'),
+           ('Handy-Chirurg', 'Phone repair · Potsdam', 'site', 'Website for a phone repair shop in Potsdam: design and build.', '', 'https://handychirurg.de')]),
+  problem=dict(title='Most websites lose customers quietly.',
+    pains=[('Slow', 'Visitors leave before the first screen has loaded.'),
+           ('Weak on the phone', 'Most of your customers see a squeezed desktop site.'),
+           ('No clear next step', 'People look around, don’t know where to click and call a competitor.'),
+           ('Smaller than you are', 'Online, a strong business looks small. That costs trust before the first call.')],
+    stat='53', stat_txt='of mobile visits are abandoned when a page takes longer than three seconds to load.', stat_src='Source: Google',
+    answer='We rebuild it turnkey: a website that makes its point in three seconds, guides people through the page and ends in an enquiry. The technology is our job, not yours.',
+    cta='Talk about your project'),
+  system=dict(title='A website is a system, not a picture.',
+    steps=[('3 s', 'Hook', 'In the first three seconds the visitor understands who you are and why it matters to them.'),
+           ('1 path', 'Guide', 'The page leads step by step: offer, proof, price, next step. No dead ends.'),
+           ('1 click', 'Enquiry', 'Call, WhatsApp or form. One clear action on every screen, especially on the phone.')],
+    foot='And you can see it working: analytics show how many enquiries the website brings.'),
+  process=dict(title='One to three calls. We do the rest.',
+    lead='Structure, copy, design, development and legal pages are on us. Plan, timeline and price are clear from the start.',
+    you='Your time',
+    steps=[('Call', 'We understand the business', 'Your goals, your customers and what the old site gets wrong.', '30 min'),
+           ('Concept', 'You see the direction', 'Structure and the first screens, as a real page in your browser.', '30 min'),
+           ('Build', 'We do the work', 'Design, copy, development, speed, SEO basics, Impressum and Datenschutz.', 'none'),
+           ('Launch', 'Live and handed over', 'All access is yours. We stay on for care if you want.', '30 min')]),
+  services=dict(title='Prices you know before we start.', lead='Three packages, one price range each. The exact price is fixed after the first call.',
+    packs=[('landing', 'Landing page', '900 – 1 400 €', 'One page, one goal', ['One page built for one offer', 'Fast on every phone', 'Contact form or WhatsApp', 'Basic SEO'], False),
+           ('site', 'Website', '2 400 – 4 600 €', 'Redesign or new', ['Full redesign, built for enquiries', 'Structure, copy, design, build', 'Speed and technical SEO', 'Impressum & Datenschutz', 'First month of care free'], True),
+           ('premium', 'Premium', 'from 6 900 €', 'Signature site', ['Everything in Website', 'Signature hero: film, 3D or animation', 'Up to 12 pages, two languages', 'Admin panel and 3 months of care', 'Priority timeline'], False)],
+    badge='Most chosen', pick='Choose', extras_lbl='Add on any time', extras=['Care from 150 €/month', 'Admin panel +600 €', 'Speed optimisation', 'SEO', '3D visualisation', 'Market analysis'],
+    calc=dict(title='Estimate your project', type='Type', types=[('landing', 'Landing page'), ('site', 'Website'), ('big', 'Large project')],
+      pages='Pages', cms='Admin panel (edit it yourself)', cms_note='+600 €', care='Care after launch', cares=[('0', 'None'), ('150', '150 €/mo'), ('300', '300 €/mo')],
+      out='Your estimate', note='A guide, not an offer. The exact price comes after a 30-minute call and is fixed before we start.', go='Send this estimate',
+      t=dict(pages='pages', noCare='No care plan', care='+ {n} € per month for care'))),
+  why=dict(title='Agency quality. One person you talk to.',
+    name='Nikolay Riabov', role='Founder, AIK Studio · Potsdam / Berlin',
+    quote='You talk to the person who builds your website. No managers in between.',
+    th=['', 'Price', 'Upside', 'Downside'],
+    rows=[('Website builder', '7–36 €/mo', 'Cheap', 'You do it all yourself; looks like a template'),
+          ('Freelancer', '800–3 000 €', 'Cheaper than an agency', 'Quality varies; often just a picture'),
+          ('Agency', '2 000–8 000 €', 'Team and process', 'Expensive, slow, through a manager'),
+          ('AIK Studio', '2 400–4 600 €', 'Turnkey, built for enquiries, direct', 'One founder, so every access is handed to you')],
+    reasons=[('Fast', 'A clear plan and short loops instead of months of back and forth.'),
+             ('Clear', 'Price, timeline and steps fixed before we start.'),
+             ('Reliable', 'Contract, 50 % prepayment, all access handed over.'),
+             ('Hand-built', 'Designed and coded for you, checked on real phones. No templates.')]),
+  faq=dict(title='Questions, answered.',
+    items=[('How much of my time does it take?', 'One to three calls of 30 minutes. We prepare everything else and show you results, not homework.'),
+           ('What does it cost?', 'A landing page is 900–1 400 €, a website 2 400–4 600 €, larger projects more. You get a fixed price after the first call.'),
+           ('Who owns the website?', 'You do. Domain, hosting, code and all access are handed over at launch.'),
+           ('How does payment work?', 'We sign a short contract. 50 % before we start, 50 % at launch.'),
+           ('What about Impressum, Datenschutz and DSGVO?', 'Legal pages and a privacy-friendly setup are part of the build. For legal advice we recommend your Steuerberater or lawyer.'),
+           ('What happens after launch?', 'Care by subscription (150–300 € per month) or by the hour, or you run it yourself.'),
+           ('Do you work in German and English?', 'Yes. Websites in German, English or both.'),
+           ('How do I start?', 'Press “Start a project”, answer six short questions, and we get back to you within one working day. Or write on WhatsApp.')]),
+  contact=dict(title='Let’s talk about your project.', lead='Tell us what your business does and what the website should achieve. We reply within one working day.',
+    start='Start a project', start_sub='Six short questions, about two minutes.', wa='Write on WhatsApp', fine='Free and non-binding.', badge='Start a project · Start a project · '),
+  foot=dict(studio='Studio', services='Services', contact='Contact',
+    svc=['Website redesign', 'New website', 'Landing page', 'SEO and speed', 'Care'],
+    who='AIK Studio · Nikolay Riabov · Potsdam / Berlin', legal=[('impressum.html', 'Impressum'), ('datenschutz.html', 'Datenschutz')], copy='© 2026 AIK Studio', top='Back to top'),
+  form=dict(label='Start a project', of='of', back='Back', next='Next', send='Send request', sending='Sending…', fine='Free and non-binding.',
+    s=[dict(t='What can we help you with?', h='Choose any', name='need', multi=True,
+            o=['Website redesign', 'New website', 'Landing page', 'SEO and speed', 'Care and updates', 'Something else']),
+       dict(t='What is your goal?', h='Choose any', name='goal', multi=True,
+            o=['More enquiries', 'Look more professional', 'Stand out from competitors', 'Launch something new', 'Not sure yet']),
+       dict(t='When would you like to start?', h='Pick one', name='start', multi=False,
+            o=['As soon as possible', 'In the next two weeks', 'Next month', 'Just looking around']),
+       dict(t='What is your budget?', h='Drag the slider to your amount.', name='budget'),
+       dict(t='How would you like to continue?', name='way', o=[('call', 'Book a call', '15 minutes, by phone or WhatsApp'), ('request', 'Send a request', 'We reply within one working day')]),
+       dict(t='How can we reach you?', h='That’s it.', name='contact')],
+    fits=[(1400, 'fits a landing page'), (2300, 'between a landing page and a website'), (4600, 'fits a website'), (6800, 'a large website'), (99999, 'fits Premium')],
+    f=dict(name='Name', name_ph='First and last name', phone='Phone / WhatsApp', phone_opt='(optional)', phone_ph='+49 151 23456789',
+           email='E-mail', email_ph='you@company.de', privacy='We only use your details to answer your enquiry.', privacy_link='Privacy policy',
+           need_phone='Please add a phone number so we can call you.', need_email='Please add an e-mail address.', need_name='Please add your name.'),
+    ok_t='Thank you.', ok='Your request is with us. We get back to you within one working day.', ok_wa='Prefer WhatsApp? Write now',
+    err='That didn’t go through. Send the same request on WhatsApp instead:', err_wa='Send on WhatsApp',
+    wa_intro='Hello Nikolay, I would like to start a project.', wa_labels=dict(need='Need', goal='Goal', start='Start', budget='Budget', way='Next step', name='Name', phone='Phone', email='E-mail')),
+),
+'de': dict(
+  lang='de', b='../', other='../', loading='AIK Studio wird geladen',
+  title='AIK Studio | Premium-Websites für Unternehmen in Berlin und Potsdam',
+  desc='AIK Studio plant, textet, gestaltet und baut Websites für Unternehmen in Berlin, Potsdam und ganz Deutschland. Redesign, neue Websites, SEO, Impressum und Datenschutz. Preise ab 900 €.',
+  skip='Zum Inhalt', menu='Menü', close='Schließen',
+  nav=[('#work', 'Arbeiten'), ('#services', 'Leistungen'), ('#process', 'Ablauf'), ('#why', 'Über uns'), ('#contact', 'Kontakt')],
+  talk='Projekt anfragen', start='Projekt starten', pause='Bewegung anhalten', play='Bewegung fortsetzen',
+  hero=dict(kicker=['Digitale Erlebnisse,', 'mit Absicht gebaut'], h=['Ihr Unternehmen', 'verdient', 'eine bessere Website.'],
+    lead='Wir machen Ihr Unternehmen zu einem digitalen Auftritt, der Vertrauen schafft, Wert vermittelt und Menschen zum Handeln bringt.',
+    cta1='Projekt besprechen', cta2='Arbeiten ansehen', skip='Intro überspringen',
+    stages=['Strategie', 'UX-Design', 'Entwicklung', 'Wachstum'],
+    alt='Drei verschneite Gipfel über einem Wolkenmeer bei Sonnenuntergang'),
+  marquee=['Websites', 'Redesign', 'Landingpages', 'SEO', 'Texte', 'Betreuung'],
+  work=dict(title='Ausgewählte Arbeiten', note='Konzepte sind als Konzepte gekennzeichnet. Live-Seiten öffnen in einem neuen Tab.', live='Live ansehen', concept='Konzept', site='Website', drag='Ziehen oder scrollen',
+    cases=[('MA’LOA', 'Gastronomie · Eschborn', 'concept', 'Startseite und Franchise-Seite für eine Hawaiian-Poké-Bowl-Kette. Eigeninitiatives Konzept, nicht die Live-Seite maloa.com.', 'maloa-hero', 'https://maolaheropage.netlify.app/'),
+           ('BLF Service', 'Baum & Land · Seddiner See', 'site', 'Website für einen Baum-, Land- und Forstservice: Leistungen das ganze Jahr, Anfragen und Jobs.', 'blf-service', 'https://lucky-parfait-f6d633.netlify.app/'),
+           ('Architekturcontor', 'Architektur · Potsdam', 'concept', 'Redesign-Konzept für ein Architekturbüro mit Schwerpunkt Schulbau: Werkverzeichnis und Anfrage in vier Schritten.', 'architekturcontor', 'https://nimble-hummingbird-a98d10.netlify.app/'),
+           ('Gute Räume', 'Interior Design · Potsdam', 'concept', 'Konzept für ein Studio für Raumkonzepte und zirkuläres Interior Design.', 'raum-studio', 'https://helpful-otter-6da26b.netlify.app/'),
+           ('Handy-Chirurg', 'Handyreparatur · Potsdam', 'site', 'Website für eine Handywerkstatt in Potsdam: Design und Umsetzung.', '', 'https://handychirurg.de')]),
+  problem=dict(title='Die meisten Websites verlieren Kunden. Leise.',
+    pains=[('Langsam', 'Besucher gehen, bevor der erste Bildschirm geladen ist.'),
+           ('Schwach auf dem Handy', 'Die meisten Kunden sehen eine gequetschte Desktop-Seite.'),
+           ('Kein klarer nächster Schritt', 'Man schaut, weiß nicht, wo man klicken soll, und ruft die Konkurrenz an.'),
+           ('Kleiner, als Sie sind', 'Online wirkt ein starkes Unternehmen klein. Das kostet Vertrauen vor dem ersten Anruf.')],
+    stat='53', stat_txt='der mobilen Besuche werden abgebrochen, wenn eine Seite länger als drei Sekunden lädt.', stat_src='Quelle: Google',
+    answer='Wir bauen sie schlüsselfertig neu: eine Website, die in drei Sekunden überzeugt, Besucher durch die Seite führt und mit einer Anfrage endet. Die Technik ist unsere Aufgabe, nicht Ihre.',
+    cta='Projekt besprechen'),
+  system=dict(title='Eine Website ist ein System, kein Bild.',
+    steps=[('3 s', 'Überzeugen', 'In den ersten drei Sekunden versteht der Besucher, wer Sie sind und warum das für ihn zählt.'),
+           ('1 Weg', 'Führen', 'Die Seite führt Schritt für Schritt: Angebot, Beweise, Preis, nächster Schritt. Keine Sackgassen.'),
+           ('1 Klick', 'Anfrage', 'Anruf, WhatsApp oder Formular. Eine klare Aktion auf jedem Bildschirm, gerade auf dem Handy.')],
+    foot='Und Sie sehen, dass es funktioniert: Die Analyse zeigt, wie viele Anfragen die Website bringt.'),
+  process=dict(title='Ein bis drei Gespräche. Den Rest machen wir.',
+    lead='Struktur, Texte, Design, Entwicklung und rechtliche Seiten übernehmen wir. Plan, Zeitrahmen und Preis stehen von Anfang an fest.',
+    you='Ihre Zeit',
+    steps=[('Gespräch', 'Wir verstehen Ihr Geschäft', 'Ihre Ziele, Ihre Kunden und was die alte Seite falsch macht.', '30 Min.'),
+           ('Konzept', 'Sie sehen die Richtung', 'Struktur und erste Bildschirme, als echte Seite in Ihrem Browser.', '30 Min.'),
+           ('Umsetzung', 'Wir machen die Arbeit', 'Design, Texte, Entwicklung, Tempo, SEO-Basis, Impressum und Datenschutz.', 'keine'),
+           ('Launch', 'Live und übergeben', 'Alle Zugänge gehören Ihnen. Auf Wunsch betreuen wir weiter.', '30 Min.')]),
+  services=dict(title='Preise, die Sie vorher kennen.', lead='Drei Pakete, je eine Preisspanne. Den genauen Preis legen wir nach dem ersten Gespräch fest.',
+    packs=[('landing', 'Landingpage', '900 – 1.400 €', 'Eine Seite, ein Ziel', ['Eine Seite für ein Angebot', 'Schnell auf jedem Handy', 'Kontaktformular oder WhatsApp', 'SEO-Grundlagen'], False),
+           ('site', 'Website', '2.400 – 4.600 €', 'Redesign oder neu', ['Komplettes Redesign für Anfragen', 'Struktur, Texte, Design, Umsetzung', 'Tempo und technisches SEO', 'Impressum & Datenschutz', 'Erster Monat Betreuung gratis'], True),
+           ('premium', 'Premium', 'ab 6.900 €', 'Signature-Website', ['Alles aus „Website“', 'Signature-Hero: Film, 3D oder Animation', 'Bis zu 12 Seiten, zweisprachig', 'Admin-Panel und 3 Monate Betreuung', 'Priorisierter Zeitplan'], False)],
+    badge='Am häufigsten gewählt', pick='Auswählen', extras_lbl='Jederzeit dazu', extras=['Betreuung ab 150 €/Monat', 'Admin-Panel +600 €', 'Tempo-Optimierung', 'SEO', '3D-Visualisierung', 'Marktanalyse'],
+    calc=dict(title='Projekt schätzen', type='Art', types=[('landing', 'Landingpage'), ('site', 'Website'), ('big', 'Großes Projekt')],
+      pages='Seiten', cms='Admin-Panel (selbst pflegen)', cms_note='+600 €', care='Betreuung nach dem Launch', cares=[('0', 'Keine'), ('150', '150 €/Mon.'), ('300', '300 €/Mon.')],
+      out='Ihre Schätzung', note='Eine Orientierung, kein Angebot. Den genauen Preis erhalten Sie nach einem 30-Minuten-Gespräch, fest vor dem Start.', go='Schätzung senden',
+      t=dict(pages='Seiten', noCare='Ohne Betreuung', care='+ {n} € pro Monat Betreuung'))),
+  why=dict(title='Agentur-Qualität. Ein Ansprechpartner.',
+    name='Nikolay Riabov', role='Gründer, AIK Studio · Potsdam / Berlin',
+    quote='Sie sprechen mit dem Menschen, der Ihre Website baut. Keine Manager dazwischen.',
+    th=['', 'Preis', 'Vorteil', 'Nachteil'],
+    rows=[('Baukasten', '7–36 €/Mon.', 'Günstig', 'Alles selbst machen; wirkt wie eine Vorlage'),
+          ('Freelancer', '800–3.000 €', 'Günstiger als Agentur', 'Qualität schwankt; oft nur ein Bild'),
+          ('Agentur', '2.000–8.000 €', 'Team und Prozess', 'Teuer, langsam, über einen Manager'),
+          ('AIK Studio', '2.400–4.600 €', 'Schlüsselfertig, für Anfragen, direkt', 'Ein Gründer, deshalb bekommen Sie alle Zugänge')],
+    reasons=[('Schnell', 'Klarer Plan und kurze Schleifen statt monatelangem Hin und Her.'),
+             ('Klar', 'Preis, Zeitrahmen und Schritte stehen vor dem Start fest.'),
+             ('Verlässlich', 'Vertrag, 50 % Anzahlung, alle Zugänge werden übergeben.'),
+             ('Von Hand gebaut', 'Für Sie gestaltet und programmiert, auf echten Handys geprüft. Keine Vorlagen.')]),
+  faq=dict(title='Fragen, beantwortet.',
+    items=[('Wie viel Zeit kostet mich das?', 'Ein bis drei Gespräche à 30 Minuten. Alles andere bereiten wir vor und zeigen Ihnen Ergebnisse statt Hausaufgaben.'),
+           ('Was kostet das?', 'Eine Landingpage 900–1.400 €, eine Website 2.400–4.600 €, größere Projekte mehr. Nach dem ersten Gespräch erhalten Sie einen Festpreis.'),
+           ('Wem gehört die Website?', 'Ihnen. Domain, Hosting, Code und alle Zugänge werden beim Launch übergeben.'),
+           ('Wie läuft die Bezahlung?', 'Wir schließen einen kurzen Vertrag. 50 % vor dem Start, 50 % zum Launch.'),
+           ('Und Impressum, Datenschutz, DSGVO?', 'Rechtliche Seiten und ein datenschutzfreundliches Setup gehören zur Umsetzung. Für Rechtsberatung empfehlen wir Ihren Steuerberater oder Anwalt.'),
+           ('Was passiert nach dem Launch?', 'Betreuung im Abo (150–300 € pro Monat) oder nach Aufwand, oder Sie pflegen die Seite selbst.'),
+           ('Arbeiten Sie auf Deutsch und Englisch?', 'Ja. Websites auf Deutsch, Englisch oder in beiden Sprachen.'),
+           ('Wie fange ich an?', 'Klicken Sie auf „Projekt starten“, beantworten Sie sechs kurze Fragen, und wir melden uns innerhalb eines Werktags. Oder schreiben Sie per WhatsApp.')]),
+  contact=dict(title='Sprechen wir über Ihr Projekt.', lead='Erzählen Sie, was Ihr Unternehmen macht und was die Website erreichen soll. Wir antworten innerhalb eines Werktags.',
+    start='Projekt starten', start_sub='Sechs kurze Fragen, etwa zwei Minuten.', wa='Per WhatsApp schreiben', fine='Kostenlos und unverbindlich.', badge='Projekt starten · Projekt starten · '),
+  foot=dict(studio='Studio', services='Leistungen', contact='Kontakt',
+    svc=['Website-Redesign', 'Neue Website', 'Landingpage', 'SEO und Tempo', 'Betreuung'],
+    who='AIK Studio · Nikolay Riabov · Potsdam / Berlin', legal=[('impressum.html', 'Impressum'), ('datenschutz.html', 'Datenschutz')], copy='© 2026 AIK Studio', top='Nach oben'),
+  form=dict(label='Projekt starten', of='von', back='Zurück', next='Weiter', send='Anfrage senden', sending='Wird gesendet…', fine='Kostenlos und unverbindlich.',
+    s=[dict(t='Wobei dürfen wir helfen?', h='Mehrere möglich', name='need', multi=True,
+            o=['Website-Redesign', 'Neue Website', 'Landingpage', 'SEO und Tempo', 'Betreuung und Pflege', 'Etwas anderes']),
+       dict(t='Was ist Ihr Ziel?', h='Mehrere möglich', name='goal', multi=True,
+            o=['Mehr Anfragen', 'Professioneller auftreten', 'Mich von anderen abheben', 'Etwas Neues starten', 'Weiß ich noch nicht genau']),
+       dict(t='Wann möchten Sie starten?', h='Eins auswählen', name='start', multi=False,
+            o=['So schnell wie möglich', 'In den nächsten zwei Wochen', 'Im nächsten Monat', 'Ich schaue mich erst um']),
+       dict(t='Mit welchem Budget planen Sie?', h='Ziehen Sie den Regler auf Ihren Betrag.', name='budget'),
+       dict(t='Wie möchten Sie weitermachen?', name='way', o=[('call', 'Gespräch vereinbaren', '15 Minuten, Anruf oder WhatsApp'), ('request', 'Anfrage senden', 'Wir antworten innerhalb eines Werktags')]),
+       dict(t='Wie erreichen wir Sie?', h='Das ist schon alles.', name='contact')],
+    fits=[(1400, 'passt zu einer Landingpage'), (2300, 'zwischen Landingpage und Website'), (4600, 'passt zu einer Website'), (6800, 'eine große Website'), (99999, 'passt zu Premium')],
+    f=dict(name='Name', name_ph='Vor- und Nachname', phone='Telefon / WhatsApp', phone_opt='(freiwillig)', phone_ph='0151 23456789',
+           email='E-Mail', email_ph='sie@firma.de', privacy='Wir nutzen Ihre Angaben nur, um Ihre Anfrage zu beantworten.', privacy_link='Datenschutz',
+           need_phone='Bitte geben Sie eine Telefonnummer an, damit wir Sie anrufen können.', need_email='Bitte geben Sie eine E-Mail-Adresse an.', need_name='Bitte geben Sie Ihren Namen an.'),
+    ok_t='Vielen Dank.', ok='Ihre Anfrage ist bei uns. Wir melden uns innerhalb eines Werktags.', ok_wa='Lieber WhatsApp? Jetzt schreiben',
+    err='Das hat nicht geklappt. Senden Sie dieselbe Anfrage per WhatsApp:', err_wa='Per WhatsApp senden',
+    wa_intro='Hallo Nikolay, ich möchte ein Projekt starten.', wa_labels=dict(need='Bedarf', goal='Ziel', start='Start', budget='Budget', way='Nächster Schritt', name='Name', phone='Telefon', email='E-Mail')),
+),
+}
+
+e = html.escape
+
+
+def btn(label, href, kind='light', arrow=False, attrs=''):
+    return f'<a class="btn btn--{kind}" href="{href}"{attrs}><span>{label}</span>{ARROW if arrow else ""}</a>'
+
+
+def aik_svg():
+    return f'<svg viewBox="{AIK_VIEWBOX}" aria-hidden="true" focusable="false">' + ''.join(f'<path d="{d}"/>' for d in AIK_PATHS) + '</svg>'
+
+
+def header(c):
+    b = c['b']
+    nav = ''.join(f'<li><a href="{h}">{x}</a></li>' for h, x in c['nav'])
+    en_cur = ' aria-current="true"' if c['lang'] == 'en' else ''
+    de_cur = ' aria-current="true"' if c['lang'] == 'de' else ''
+    en_href = './' if c['lang'] == 'en' else '../'
+    de_href = './de/' if c['lang'] == 'en' else './'
+    return f'''<a class="skip-link" href="#work">{c["skip"]}</a>
+<header class="site-header is-cine-hidden">
+  <a class="brand" href="{b}" aria-label="AIK Studio"><img src="{b}media/logo/aik-lockup-white.png" width="222" height="120" alt="AIK Studio"></a>
+  <nav class="nav" id="site-nav" aria-label="Main">
+    <ul class="nav__list">{nav}</ul>
+    <div class="nav__more">{btn(c["start"], "#start", "light", True, ' data-start')}<p>{''.join(f'<a href="{u}" target="_blank" rel="noopener">{n}</a>' for n, u in SOCIAL)}</p></div>
+  </nav>
+  <div class="header-tools">
+    <div class="lang" aria-label="Language"><a href="{en_href}" hreflang="en" lang="en"{en_cur}>EN</a><a href="{de_href}" hreflang="de" lang="de"{de_cur}>DE</a></div>
+    {btn(c["talk"], "#contact", "light", True, ' data-start')}
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="menu-toggle__bars" aria-hidden="true"></span><span class="menu-toggle__txt" data-open="{c["menu"]}" data-close="{c["close"]}">{c["menu"]}</span></button>
+  </div>
+</header>'''
+
+
+def hero(c):
+    b = c['b']; m = b + 'media/hero4/'; h = c['hero']
+    plate = e(json.dumps(PLATE, separators=(',', ':')))
+    srcset = ', '.join(f'{m}plate-{w}.webp {w}w' for w in PLATE['sizes'])
+    lines = ''.join(f'<span class="hx__line{" hx__line--out" if i == 1 else ""}"><span style="--d:{160 + 110 * i}">{t}</span></span>' for i, t in enumerate(h['h']))
+    stages = ''.join(f'<li data-in style="--d:{700 + 70 * i}"><b>0{i + 1}</b>{s}</li>' for i, s in enumerate(h['stages']))
+    return f'''<section class="hx" id="top" aria-labelledby="hero-title" data-media="{m}" data-plate="{plate}" data-film="{b}media/hero/flight-1920.mp4">
+    <div class="hx__stage">
+      <div class="hx__scene">
+        <picture class="hx__plate">
+          <source media="(max-width: 760px) and (orientation: portrait)" srcset="{m}plate-portrait-900.webp 900w, {m}plate-portrait-1400.webp 1400w" sizes="100vw">
+          <img src="{m}plate-1920.webp" srcset="{srcset}" sizes="(min-aspect-ratio: 16/9) 100vw, 112vw" alt="{h["alt"]}" width="1920" height="1080" fetchpriority="high" decoding="async">
+        </picture>
+        <div class="hx__mark">{aik_svg()}</div>
+        <div class="hx__shade" aria-hidden="true"></div>
+      </div>
+      <div class="hx__copy">
+        <div class="hx__main">
+          <p class="hx__kicker" data-in style="--d:60">{h["kicker"][0]}<br>{h["kicker"][1]}</p>
+          <h1 class="hx__title" id="hero-title"><span class="visually-hidden">AIK Studio: </span>{lines}</h1>
+        </div>
+        <div class="hx__side">
+          <p class="hx__lead" data-in style="--d:420">{h["lead"]}</p>
+          <div class="hx__ctas" data-in style="--d:520">
+            {btn(h["cta1"], "#contact", "light", True, ' data-start')}
+            {btn(h["cta2"], "#work", "line")}
+          </div>
+          <button class="pause" type="button" data-in style="--d:620" data-pause="{c["pause"]}" data-play="{c["play"]}" aria-pressed="false">{c["pause"]}</button>
+        </div>
+        <ol class="hx__stages">{stages}</ol>
+      </div>
+      <button class="hx__skip" type="button">{h["skip"]}</button>
+    </div>
+  </section>'''
+
+
+def marquee(c):
+    row = ''.join(f'<span>{w}</span>' for w in c['marquee'])
+    return f'''<div class="mq" aria-hidden="true">
+    <div class="mq__row"><div class="mq__track">{row}{row}</div></div>
+    <div class="mq__row mq__row--out"><div class="mq__track">{row}{row}</div></div>
+  </div>'''
+
+
+def work(c):
+    b = c['b']; w = c['work']
+    cards = []
+    for i, (name, meta, kind, txt, im, url) in enumerate(w['cases']):
+        tag = w['concept'] if kind == 'concept' else w['site']
+        domain = re.sub(r'^https?://(www\.)?|/$', '', url)
+        label = domain if 'netlify' not in domain else w['live']
+        pic = (f'<img src="{b}media/work/{im}.webp" alt="{e(name)}: {e(txt)}" loading="lazy" decoding="async" width="828" height="1276">'
+               if im else f'<span class="case__type" aria-hidden="true">{e(domain)}</span>')
+        cards.append(f'''<li class="case{' case--text' if not im else ''}">
+        <a href="{url}" target="_blank" rel="noopener">
+          <div class="case__pic">{pic}<span class="case__tag">{tag}</span><span class="case__go">{label} ↗</span></div>
+          <div class="case__info"><h3>{name}</h3><p class="case__meta">{meta}</p><p class="case__txt">{txt}</p></div>
+        </a></li>''')
+    return f'''<section class="sec work" id="work" aria-labelledby="work-title">
+    <div class="work__pin">
+      <div class="wrap work__head">
+        <h2 class="h2" id="work-title" data-blur>{w["title"]}</h2>
+        <p class="work__note" data-up>{w["note"]}</p>
+      </div>
+      <div class="work__rail"><ol class="work__track">{''.join(cards)}</ol></div>
+      <div class="wrap work__foot"><span class="work__bar"><i></i></span><span class="work__hint">{w["drag"]}</span></div>
+    </div>
+  </section>'''
+
+
+def problem(c):
+    p = c['problem']
+    pains = ''.join(f'<li class="stack__card"><h3 class="h3">{t}</h3><p>{d}</p></li>' for t, d in p['pains'])
+    return f'''<section class="sec problem" id="problem" aria-labelledby="problem-title">
+    <div class="wrap">
+      <h2 class="h2 problem__title" id="problem-title" data-blur>{p["title"]}</h2>
+      <ol class="stack">{pains}</ol>
+      <div class="stat" data-up>
+        <p class="stat__num"><span data-count="{p["stat"]}">{p["stat"]}</span>%</p>
+        <p class="stat__txt">{p["stat_txt"]}<small>{p["stat_src"]}</small></p>
+      </div>
+      <p class="read" data-read>{p["answer"]}</p>
+      <p data-up>{btn(p["cta"], "#contact", "light", True, ' data-start')}</p>
+    </div>
+  </section>'''
+
+
+def system(c):
+    s = c['system']; b = c['b']
+    steps = ''.join(f'<li data-up style="--d:{i * 90}"><p class="sys__big">{n}</p><h3>{t}</h3><p>{d}</p></li>' for i, (n, t, d) in enumerate(s['steps']))
+    return f'''<section class="sec system" aria-labelledby="system-title">
+    <div class="system__bg" aria-hidden="true"><img src="{b}media/bg/peak-gold.webp" alt="" loading="lazy" decoding="async" width="1600" height="900"></div>
+    <div class="wrap">
+      <h2 class="h2" id="system-title" data-blur>{s["title"]}</h2>
+      <ol class="sys">{steps}</ol>
+      <p class="read read--sm" data-read>{s["foot"]}</p>
+    </div>
+  </section>'''
+
+
+def process(c):
+    p = c['process']
+    tabs = ''.join(f'<li class="{"is-on" if i == 0 else ""}"><i></i>{t}</li>' for i, (t, *_ ) in enumerate(p['steps']))
+    panels = ''.join(f'''<li class="proc__step{' is-on' if i == 0 else ''}"><h3 class="h3">{h}</h3><p>{d}</p><p class="proc__you">{p["you"]}: <b>{y}</b></p></li>''' for i, (t, h, d, y) in enumerate(p['steps']))
+    digit = lambda: '<span class="roll"><span>' + ''.join(f'<b>{n}</b>' for n in range(10)) + '</span></span>'
+    return f'''<section class="sec process" id="process" aria-labelledby="process-title" style="--n:{len(p["steps"])}">
+    <div class="wrap process__intro">
+      <h2 class="h2" id="process-title" data-blur>{p["title"]}</h2>
+      <p class="read read--sm" data-read>{p["lead"]}</p>
+    </div>
+    <div class="proc">
+      <div class="proc__pin wrap">
+        <ol class="proc__tabs" aria-hidden="true">{tabs}</ol>
+        <p class="proc__num" aria-hidden="true">{digit()}{digit()}</p>
+        <ol class="proc__steps">{panels}</ol>
+      </div>
+    </div>
+  </section>'''
+
+
+def services(c):
+    s = c['services']; k = s['calc']
+    packs = []
+    for key, name, price, sub, items, hot in s['packs']:
+        li = ''.join(f'<li>{CHECK}{x}</li>' for x in items)
+        packs.append(f'''<li class="pack{' pack--hot' if hot else ''}" data-up>
+        {f'<span class="pack__badge">{s["badge"]}</span>' if hot else ''}<p class="pack__sub">{sub}</p><h3 class="pack__name">{name}</h3><p class="pack__price">{price}</p>
+        <ul class="pack__list">{li}</ul>
+        {btn(s["pick"], "#start", "dark" if not hot else "light", True, f' data-start data-need="{key}"')}
+      </li>''')
+    seg = lambda name, opts, on: ''.join(f'<label><input type="radio" name="{name}" value="{v}"{" checked" if v == on else ""}><span>{t}</span></label>' for v, t in opts)
+    return f'''<section class="sec light services" id="services" aria-labelledby="services-title">
+    <div class="wrap">
+      <div class="sec__head"><h2 class="h2" id="services-title" data-blur>{s["title"]}</h2><p class="sec__lead" data-up>{s["lead"]}</p></div>
+      <ol class="packs">{''.join(packs)}</ol>
+      <div class="extras" data-up><span>{s["extras_lbl"]}</span>{''.join(f'<em>{x}</em>' for x in s["extras"])}</div>
+      <form class="calc" data-up data-t='{e(json.dumps(k["t"], ensure_ascii=False))}' onsubmit="return false">
+        <div class="calc__in">
+          <h3 class="h3">{k["title"]}</h3>
+          <fieldset><legend>{k["type"]}</legend><div class="seg">{seg("type", k["types"], "site")}</div></fieldset>
+          <fieldset><legend>{k["pages"]} <output name="pagesOut">5</output></legend><input type="range" name="pages" min="1" max="12" value="5" aria-label="{k["pages"]}"></fieldset>
+          <label class="switch"><input type="checkbox" name="cms"><span class="switch__ui" aria-hidden="true"></span><span>{k["cms"]} <small>{k["cms_note"]}</small></span></label>
+          <fieldset><legend>{k["care"]}</legend><div class="seg">{seg("care", k["cares"], "0")}</div></fieldset>
+        </div>
+        <div class="calc__out">
+          <p class="calc__lbl">{k["out"]}</p>
+          <p class="calc__price" aria-live="polite">2 400 – 4 600 €</p>
+          <p class="calc__care"></p>
+          <p class="calc__note">{k["note"]}</p>
+          {btn(k["go"], "#start", "light", True, ' data-start data-from-calc')}
+        </div>
+      </form>
+    </div>
+  </section>'''
+
+
+def why(c):
+    w = c['why']; b = c['b']
+    rows = ''.join(f'<tr{" class=\"us\"" if i == len(w["rows"]) - 1 else ""}><th scope="row">{r[0]}</th><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td></tr>' for i, r in enumerate(w['rows']))
+    th = ''.join(f'<th scope="col">{x}</th>' for x in w['th'])
+    reasons = ''.join(f'<li data-up style="--d:{i * 70}"><h3>{t}</h3><p>{d}</p></li>' for i, (t, d) in enumerate(w['reasons']))
+    social = ''.join(f'<a class="chip" href="{u}" target="_blank" rel="noopener">{n} ↗</a>' for n, u in SOCIAL)
+    return f'''<section class="sec why" id="why" aria-labelledby="why-title">
+    <div class="wrap">
+      <h2 class="h2" id="why-title" data-blur>{w["title"]}</h2>
+      <div class="founder">
+        <div class="founder__pic" data-up><img src="{b}media/bg/founder-peaks.webp" alt="" loading="lazy" decoding="async" width="900" height="1100"><img class="founder__mark" src="{b}media/logo/aik-lockup-white.png" alt="" width="222" height="120"></div>
+        <div class="founder__txt">
+          <p class="read" data-read>{w["quote"]}</p>
+          <p class="founder__name" data-up>{w["name"]}<span>{w["role"]}</span></p>
+          <p class="founder__links" data-up>{social}</p>
+        </div>
+      </div>
+      <div class="cmp" data-up><table><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>
+      <ul class="reasons">{reasons}</ul>
+    </div>
+  </section>'''
+
+
+def faq(c):
+    f = c['faq']
+    items = ''.join(f'<li data-up><details><summary><span>{q}</span>{PLUS}</summary><div class="faq__a"><p>{a}</p></div></details></li>' for q, a in f['items'])
+    return f'''<section class="sec light faq" id="faq" aria-labelledby="faq-title">
+    <div class="wrap faq__grid">
+      <h2 class="h2" id="faq-title" data-blur>{f["title"]}</h2>
+      <ul class="faq__list">{items}</ul>
+    </div>
+  </section>'''
+
+
+def contact(c):
+    k = c['contact']; b = c['b']
+    badge = ''.join(f'<span style="--i:{i}">{ch}</span>' for i, ch in enumerate(k['badge']))
+    social = ''.join(f'<a href="{u}" target="_blank" rel="noopener">{n} ↗</a>' for n, u in SOCIAL[1:])
+    return f'''<section class="sec contact" id="contact" aria-labelledby="contact-title">
+    <div class="contact__bg" aria-hidden="true"><img src="{b}media/bg/mist-ridges.webp" alt="" loading="lazy" decoding="async" width="1920" height="1080"></div>
+    <div class="wrap">
+      <h2 class="h1" id="contact-title" data-blur>{k["title"]}</h2>
+      <p class="sec__lead" data-up>{k["lead"]}</p>
+      <div class="go">
+        <a class="go__card go__card--light" href="#start" data-start data-up>
+          <span class="go__ico">{BUBBLE}</span><span class="go__t">{k["start"]}</span><span class="go__s">{k["start_sub"]}</span>
+          <span class="badge" aria-hidden="true"><span class="badge__ring" style="--n:{len(k["badge"])}">{badge}</span><b>→</b></span>
+        </a>
+        <a class="go__card" href="https://wa.me/{WA}" target="_blank" rel="noopener" data-up style="--d:90">
+          <span class="go__ico">{PHONE}</span><span class="go__t">{k["wa"]}</span><span class="go__s">{WA_SHOW}</span>
+        </a>
+      </div>
+      <p class="contact__more" data-up>{social}<span>{k["fine"]}</span></p>
+    </div>
+  </section>'''
+
+
+def footer(c):
+    f = c['foot']; b = c['b']
+    nav = ''.join(f'<li><a href="{h}">{x}</a></li>' for h, x in c['nav'])
+    svc = ''.join(f'<li><a href="#services">{x}</a></li>' for x in f['svc'])
+    soc = ''.join(f'<li><a href="{u}" target="_blank" rel="noopener">{n}</a></li>' for n, u in SOCIAL)
+    legal = ''.join(f'<a href="{b}{h}">{x}</a>' for h, x in f['legal'])
+    return f'''<footer class="foot">
+    <div class="wrap">
+      <div class="foot__cols">
+        <img class="foot__logo" src="{b}media/logo/aik-lockup-white.png" alt="AIK Studio" width="222" height="120" loading="lazy">
+        <div><p>{f["studio"]}</p><ul>{nav}</ul></div>
+        <div><p>{f["services"]}</p><ul>{svc}</ul></div>
+        <div><p>{f["contact"]}</p><ul>{soc}</ul></div>
+      </div>
+      <p class="foot__who">{f["who"]}</p>
+      <p class="foot__mega" aria-hidden="true">AIK Studio</p>
+      <div class="foot__base"><span>{f["copy"]}</span>{legal}<button class="pause" type="button" data-pause="{c["pause"]}" data-play="{c["play"]}" aria-pressed="false">{c["pause"]}</button><a href="#top">{f["top"]} ↑</a></div>
+    </div>
+  </footer>'''
+
+
+def form(c):
+    f = c['form']; b = c['b']; s = f['s']; n = len(s)
+    def chips(st):
+        typ = 'checkbox' if st['multi'] else 'radio'
+        return ''.join(f'<label class="opt"><input type="{typ}" name="{st["name"]}" value="{e(o)}"><span>{o}</span></label>' for o in st['o'])
+    steps = []
+    for i, st in enumerate(s):
+        if st['name'] in ('need', 'goal', 'start'):
+            body = f'<div class="opts">{chips(st)}</div>'
+        elif st['name'] == 'budget':
+            body = f'''<p class="budget"><output name="budgetOut">2 400 €</output><small class="budget__fit"></small></p>
+            <input class="range" type="range" name="budget" min="900" max="7000" step="100" value="2400" aria-label="Budget">
+            <p class="budget__ends"><span>900 €</span><span>{'7.000' if c['lang'] == 'de' else '7 000'} € +</span></p>'''
+        elif st['name'] == 'way':
+            body = '<div class="ways">' + ''.join(f'''<label class="way{' way--dark' if v == 'call' else ''}"><input type="radio" name="way" value="{v}"><span class="way__ico">{PHONE if v == 'call' else BUBBLE}</span><b>{t}</b><span>{d}</span></label>''' for v, t, d in st['o']) + '</div>'
+        else:
+            ff = f['f']
+            body = f'''<div class="fields">
+              <label class="field"><span>{ff["name"]}</span><input name="name" autocomplete="name" placeholder="{ff["name_ph"]}" data-need="{ff["need_name"]}"></label>
+              <label class="field"><span>{ff["phone"]} <small class="opt-note">{ff["phone_opt"]}</small></span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="{ff["phone_ph"]}" data-need="{ff["need_phone"]}"></label>
+              <label class="field"><span>{ff["email"]}</span><input name="email" type="email" autocomplete="email" inputmode="email" placeholder="{ff["email_ph"]}" data-need="{ff["need_email"]}"></label>
+              <p class="field__err" role="alert"></p>
+              <p class="fields__fine">{ff["privacy"]} <a href="{b}datenschutz.html" target="_blank">{ff["privacy_link"]}</a></p>
+            </div>'''
+        auto = st['name'] in ('start', 'way')
+        steps.append(f'''<fieldset class="q{' is-on' if i == 0 else ''}" data-step="{i}"{' data-auto' if auto else ''}>
+          <legend class="q__t">{st["t"]}</legend>{f'<p class="q__h">{st["h"]}</p>' if st.get("h") else ''}
+          {body}
+        </fieldset>''')
+    fits = e(json.dumps(f['fits'], ensure_ascii=False))
+    wa = e(json.dumps(dict(intro=f['wa_intro'], l=f['wa_labels']), ensure_ascii=False))
+    return f'''<dialog class="sheet" id="start" aria-labelledby="sheet-title" data-fits="{fits}" data-wa="{wa}" data-num="{WA}">
+  <form class="sheet__form" name="project" method="post" action="{b}" data-netlify="true" netlify-honeypot="company" novalidate>
+    <input type="hidden" name="form-name" value="project"><input type="hidden" name="lang" value="{c["lang"]}">
+    <p hidden><label>Company <input name="company" tabindex="-1" autocomplete="off"></label></p>
+    <div class="sheet__top">
+      <img src="{b}media/logo/aik-lockup-white.png" alt="AIK Studio" width="222" height="120">
+      <p class="sheet__count" id="sheet-title"><span class="visually-hidden">{f["label"]}: </span><b>1</b> / {n}</p>
+      <button class="sheet__x" type="button" data-close aria-label="Close">{CLOSE}</button>
+      <span class="sheet__bar" aria-hidden="true"><i></i></span>
+    </div>
+    <div class="sheet__body">
+      {''.join(steps)}
+      <div class="q q--done" data-step="done" hidden>
+        <p class="q__t">{f["ok_t"]}</p><p class="q__h">{f["ok"]}</p>
+        <p>{btn(f["ok_wa"], "#", "dark", True, ' data-wa-link target="_blank" rel="noopener"')}</p>
+      </div>
+      <div class="q q--err" data-step="err" hidden>
+        <p class="q__h">{f["err"]}</p>
+        <p>{btn(f["err_wa"], "#", "dark", True, ' data-wa-link target="_blank" rel="noopener"')}</p>
+      </div>
+    </div>
+    <div class="sheet__nav">
+      <button class="btn btn--line-dark" type="button" data-back hidden><span>{f["back"]}</span></button>
+      <button class="btn btn--dark" type="button" data-next disabled><span>{f["next"]}</span></button>
+      <button class="btn btn--dark" type="submit" data-send hidden data-sending="{f["sending"]}"><span>{f["send"]}</span></button>
+      <p class="sheet__fine">{f["fine"]}</p>
+    </div>
+  </form>
+</dialog>'''
+
+
+def page(c):
+    b = c['b']; lang = c['lang']
+    alt_en = '../' if lang == 'de' else './'
+    alt_de = './' if lang == 'de' else './de/'
+    ld = {"@context": "https://schema.org", "@type": "ProfessionalService", "name": "AIK Studio",
+          "description": c['desc'], "founder": {"@type": "Person", "name": "Nikolay Riabov"},
+          "areaServed": ["Berlin", "Potsdam", "Deutschland"], "address": {"@type": "PostalAddress", "addressLocality": "Potsdam", "addressCountry": "DE"},
+          "telephone": "+4915221595565", "priceRange": "900 € – 6 900 €+", "sameAs": [u for n, u in SOCIAL if n in ('Instagram', 'LinkedIn')]}
+    loader = LOADER.replace('{b}', b).replace('aria-label="Loading AIK Studio"', f'aria-label="{c["loading"]}"')
+    return f'''<!DOCTYPE html>
+<html lang="{lang}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{c["title"]}</title>
+<meta name="description" content="{c["desc"]}">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" type="image/png" sizes="48x48" href="{b}media/logo/icon-48.png">
+<link rel="apple-touch-icon" href="{b}media/logo/icon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{c["title"]}">
+<meta property="og:description" content="{c["desc"]}">
+<meta property="og:image" content="{b}media/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" hreflang="en" href="{alt_en}">
+<link rel="alternate" hreflang="de" href="{alt_de}">
+<link rel="alternate" hreflang="x-default" href="{alt_en}">
+<link rel="preload" href="{b}fonts/bowlby-one-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{b}fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" as="image" href="{b}media/loader/aik-lockup.webp" fetchpriority="high">
+<link rel="preload" as="image" href="{b}media/hero4/plate-1920.webp" imagesrcset="{', '.join(f'{b}media/hero4/plate-{w}.webp {w}w' for w in PLATE['sizes'])}" imagesizes="(min-aspect-ratio: 16/9) 100vw, 112vw" media="(min-width: 761px), (orientation: landscape)" fetchpriority="high">
+<link rel="preload" as="image" href="{b}media/hero4/plate-portrait-900.webp" imagesrcset="{b}media/hero4/plate-portrait-900.webp 900w, {b}media/hero4/plate-portrait-1400.webp 1400w" imagesizes="100vw" media="(max-width: 760px) and (orientation: portrait)" fetchpriority="high">
+<link rel="stylesheet" href="{b}css/loader.css">
+<link rel="stylesheet" href="{b}css/aik.css">
+<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
+{loader}
+{header(c)}
+
+<main id="main">
+  {hero(c)}
+  {marquee(c)}
+  {work(c)}
+  {problem(c)}
+  {system(c)}
+  {process(c)}
+  {services(c)}
+  {why(c)}
+  {faq(c)}
+  {contact(c)}
+  {footer(c)}
+</main>
+
+<a class="float" href="#start" data-start><span>{c["start"]}</span><span class="btn__arrow" aria-hidden="true">→</span></a>
+{form(c)}
+
+<script src="{b}js/hero4.js" defer></script>
+<script src="{b}js/aik.js" defer></script>
+</body>
+</html>
+'''
+
+
+for lang, path in [('en', 'index.html'), ('de', 'de/index.html')]:
+    (ROOT / path).write_text(page(T[lang]))
+    print(lang, 'ok', path)

@@ -1,0 +1,30 @@
+<script>
+  document.documentElement.classList.add('is-loading');
+  /* The cinematic opening is opt-in and decided before first paint.
+     Reduced motion or no script: the Hero renders as a finished still. */
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('cine-on');
+</script>
+</head>
+<body>
+<div class="aik-loader" data-tex="{b}media/loader/aik-lockup.webp" role="status" aria-label="Loading AIK Studio">
+  <div class="aik-loader__panel aik-loader__panel--top"></div>
+  <div class="aik-loader__panel aik-loader__panel--bottom"></div>
+  <div class="aik-loader__horizon"></div>
+  <div class="aik-loader__mark">
+    <svg viewBox="0 0 1914 1032" aria-hidden="true" focusable="false">
+      <defs>
+        <mask id="aikl-m" maskUnits="userSpaceOnUse" x="0" y="0" width="1914" height="852" style="mask-type:alpha"><image href="{b}media/loader/aik-mark.webp" width="1914" height="852"/></mask>
+        <linearGradient id="aikl-g" x1="0" y1="0" x2="1" y2="0.35"><stop offset=".3" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".75"/><stop offset=".7" stop-color="#fff" stop-opacity="0"/></linearGradient>
+        <clipPath id="aikl-rise"><rect class="aik-loader__rise" width="1914" height="852"/></clipPath>
+        <clipPath id="aikl-c0"><rect x="226" y="852" width="142" height="180"/></clipPath><clipPath id="aikl-c1"><rect x="505" y="852" width="146" height="180"/></clipPath><clipPath id="aikl-c2"><rect x="796" y="852" width="149" height="180"/></clipPath><clipPath id="aikl-c3"><rect x="1082" y="852" width="156" height="180"/></clipPath><clipPath id="aikl-c4"><rect x="1371" y="852" width="53" height="180"/></clipPath><clipPath id="aikl-c5"><rect x="1545" y="852" width="163" height="180"/></clipPath>
+      </defs>
+      <g class="aik-loader__outline"><path pathLength="1" d="M611 210 605 204 596 206 523 268 483 287 273 482 228 536 204 577 21 761 21 767 30 765 51 745 89 754 90 765 97 765 125 741 146 748 149 762 162 766 163 746 178 745 228 684 250 665 423 452 598 219 611 216Z"/><path pathLength="1" d="M872 798 842 742 615 415 608 415 277 788 277 794 283 794 300 778 312 777 350 791 401 795 602 550 615 546 676 643 676 651 591 653 564 681 562 690 705 690 775 799Z"/><path pathLength="1" d="M620 225 649 284 649 324 713 384 751 413 759 414 906 188 974 35 982 35 1042 111 1042 121 1028 141 1028 161 1009 169 972 165 947 182 945 203 960 219 986 207 1016 234 1022 234 1033 184 1042 184 1259 382 1265 382 1265 376 1240 338 1240 329 1277 298 1277 268 1319 200 1331 198 1334 219 1353 240 1354 255 1347 283 1317 297 1317 307 1328 313 1342 297 1353 296 1354 345 1361 345 1378 324 1386 324 1425 361 1425 369 1187 575 1178 574 1176 413 1170 409 1101 409 1093 414 1095 801 1175 799 1177 601 1189 587 1202 589 1474 800 1595 797 1595 791 1314 577 1318 565 1494 416 1504 417 1520 441 1580 497 1832 711 1854 735 1860 735 1860 729 1328 179 1240 240 1227 242 1153 178 1120 169 1113 151 1074 117 979 16 966 21 875 103 688 282 679 282 626 225Z"/><path pathLength="1" d="M920 283 916 796 919 801 1000 799 1002 342 928 284Z"/></g>
+      <g clip-path="url(#aikl-rise)"><image class="aik-loader__metal" href="{b}media/loader/aik-mark.webp" width="1914" height="852"/></g>
+      <g mask="url(#aikl-m)"><rect class="aik-loader__sweep" x="-200" y="0" width="2314" height="852" fill="url(#aikl-g)"/></g>
+      <g clip-path="url(#aikl-c0)"><g class="aik-loader__letter" style="--i:0"><image href="{b}media/loader/aik-studio.webp" x="0" y="852" width="1914" height="180"/></g></g><g clip-path="url(#aikl-c1)"><g class="aik-loader__letter" style="--i:1"><image href="{b}media/loader/aik-studio.webp" x="0" y="852" width="1914" height="180"/></g></g><g clip-path="url(#aikl-c2)"><g class="aik-loader__letter" style="--i:2"><image href="{b}media/loader/aik-studio.webp" x="0" y="852" width="1914" height="180"/></g></g><g clip-path="url(#aikl-c3)"><g class="aik-loader__letter" style="--i:3"><image href="{b}media/loader/aik-studio.webp" x="0" y="852" width="1914" height="180"/></g></g><g clip-path="url(#aikl-c4)"><g class="aik-loader__letter" style="--i:4"><image href="{b}media/loader/aik-studio.webp" x="0" y="852" width="1914" height="180"/></g></g><g clip-path="url(#aikl-c5)"><g class="aik-loader__letter" style="--i:5"><image href="{b}media/loader/aik-studio.webp" x="0" y="852" width="1914" height="180"/></g></g>
+    </svg>
+  </div>
+  <div class="aik-loader__meta" aria-hidden="true"><span>Potsdam · Berlin</span><span class="aik-loader__count">000</span></div>
+</div>
+<script src="{b}js/loader-gl.js"></script>
+<script src="{b}js/loader.js"></script>
