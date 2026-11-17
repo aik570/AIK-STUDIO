@@ -522,7 +522,7 @@ def why(c):
     <div class="slide"><div class="slide__in">
       {head(c, "why", w["title"])}
       <div class="founder">
-        <div class="founder__pic" data-up><img src="{b}media/stills/f060.webp" alt="" loading="lazy" decoding="async" width="540" height="960"><p class="founder__name">{w["name"]}<span>{w["role"]}</span></p></div>
+        <div class="founder__pic" data-up><img src="{b}media/founder/nikolay-riabov.webp" alt="{w["name"]}, {w["role"]}" loading="lazy" decoding="async" width="600" height="800"><p class="founder__name">{w["name"]}<span>{w["role"]}</span></p></div>
         <div class="founder__txt">
           <p class="founder__q" data-read>“{w["quote"]}”</p>
           <ul class="facts">{facts}</ul>

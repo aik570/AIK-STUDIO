@@ -40,7 +40,7 @@ no form backend) the visitor gets the same answers as a ready WhatsApp message t
 ## Open before launch
 
 - Impressum and Datenschutz: address, e-mail, VAT status (marked in the pages).
-- Founder photo for "Why AIK" (now the eagle still).
+- Founder photo: media/founder/nikolay-riabov.webp (source in ../sources/founder-original.png; the supplied file is about 640 px wide, a larger original would look sharper on Retina).
 - Handy-Chirurg: a screenshot for its card (now a text card linking to handychirurg.de).
 - Original Hero photo in full resolution (the current one is 1672 px wide).
 - Domain: canonical URL, sitemap, absolute og:image.
