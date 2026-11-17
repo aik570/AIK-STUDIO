@@ -33,11 +33,13 @@
   const links = $$('.nav__list a[href^="#"]');
   const targets = links.map((a) => $(a.getAttribute('href')));
   const heroEl = $('.hx');
+  const lightSlides = $$('.slide--light');
   onScroll.push(() => {
     const mid = innerHeight * .4; let best = -1, top = -Infinity;
     targets.forEach((s, i) => { if (!s) return; const r = s.getBoundingClientRect(); if (r.top <= mid && r.bottom > mid && r.top > top) { top = r.top; best = i; } });
     links.forEach((a, i) => a.classList.toggle('is-here', i === best));
     header.classList.toggle('is-past', heroEl ? heroEl.getBoundingClientRect().bottom < innerHeight * .5 : scrollY > 80);
+    header.classList.toggle('on-light', !root.classList.contains('is-menu') && lightSlides.some((el) => { const r = el.getBoundingClientRect(); return r.top <= 40 && r.bottom >= 40; }));
   });
 
   /* ---------------------------------------------------- the world: one landscape per section */

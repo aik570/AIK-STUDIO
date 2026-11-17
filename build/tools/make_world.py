@@ -15,13 +15,14 @@ os.makedirs('media/stills', exist_ok=True)
 
 
 def grade(im, dark=1.0):
+    """Cold steel: less colour, blue-grey mid-tones, the warm light kept only as a faint glow."""
     f = im.astype(np.float32) / 255
     lum = f @ np.array([.114, .587, .299], np.float32)
-    f = f * .82 + lum[..., None] * .18                                   # a little less colour
+    f = f * .62 + lum[..., None] * .38                                   # much less colour
+    steel = lum[..., None] * np.array([1.12, 1.0, .9], np.float32)       # BGR: blue-grey
+    f = f * .6 + steel * .4
     shadow = np.clip(1 - lum * 2.2, 0, 1)[..., None]
-    light = np.clip((lum - .55) * 2.2, 0, 1)[..., None]
-    f = f + shadow * np.array([.018, .006, -.008], np.float32)          # BGR: cold shadows
-    f = f + light * np.array([-.03, .0, .03], np.float32)                # warm light
+    f = f + shadow * np.array([.03, .012, -.004], np.float32)           # cold shadows
     f = np.clip(f * dark, 0, 1) ** 1.04
     return (f * 255).astype(np.uint8)
 

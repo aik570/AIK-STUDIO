@@ -1,14 +1,10 @@
-/* Hero: one real photo in three depths, the AIK letters as glass in front of the sky
-   and behind the peaks.
+/* Hero: one real photo in three depths and the word AIK as a window into it.
 
-   Layers (back → front), one WebGL pass so they move together:
-     sky and far range  → slow
-     AIK letters        → between: light glass panels with a fine bright edge (as in the logo);
-                          they refract and lift what is behind them
-     near peaks, clouds → faster, and they stand in front of the letters (media/hero4/depth.png, G)
-     drifting mist      → fastest
-   The letters come from the inline SVG in .hx__mark (one source for WebGL and the no-WebGL
-   fallback) and are rasterised at screen resolution, so their edges stay sharp.
+   Around the letters the sky is cold mist; inside them the same sky is clear and warm,
+   as if the fog had opened in the shape of the name. The near peaks stand in front of the
+   letters (media/hero4/depth.png, G), the lower part of the letters dissolves into drifting
+   mist, and S T U D I O sits underneath as in the logo (HTML, see .hx__studio).
+   Type: Big Shoulders Display 900, rasterised at screen resolution.
 
    Desktop: loader → eagle flight (~3 s) → Hero. Phones, reduced motion, save-data: loader → Hero.
    "Pause motion" (html.is-still) freezes mist, drift and the light sweep. */
@@ -21,7 +17,8 @@
   const scene = sec.querySelector('.hx__scene');
   const img = sec.querySelector('.hx__plate img');
   const markBox = sec.querySelector('.hx__mark');
-  const svg = markBox.querySelector('svg');
+  const WORD = (markBox.dataset.word || 'AIK').toUpperCase();
+  const FACE = '900 100px "Big Shoulders Display"';
   const media = sec.dataset.media;
   const loader = window.AIK_LOADER;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -36,28 +33,29 @@
   let introT0 = 0, dive = 0, kick = () => {};
   const setDive = (p) => { dive = p; sec.style.setProperty('--dive', p.toFixed(4)); kick(); };
 
-  /* ------------------------------------------------------------ letters → texture
-     R: the letter, G: its fine edge, B: a soft bevel inside the edge (for the light and the bend) */
-  const paths = [...svg.querySelectorAll('path')].map((p) => new Path2D(p.getAttribute('d')));
-  const vb = svg.viewBox.baseVal;
+  /* ------------------------------------------------------------ the word → texture
+     R: the letters, G: a fine edge inside them */
   const letters = (w, h) => {
-    const layer = (draw) => {
-      const c = document.createElement('canvas'); c.width = w; c.height = h;
-      const x = c.getContext('2d');
-      x.setTransform(w / vb.width, 0, 0, h / vb.height, -vb.x * w / vb.width, -vb.y * h / vb.height);
-      x.fillStyle = x.strokeStyle = '#fff'; x.lineJoin = 'miter';
-      draw(x, vb.width / w);                       // second arg: one screen pixel in SVG units
-      return x.getImageData(0, 0, w, h).data;
-    };
-    const fill = layer((x) => paths.forEach((p) => x.fill(p)));
-    const edge = layer((x, px) => paths.forEach((p) => { x.save(); x.clip(p); x.lineWidth = px * 3.2; x.stroke(p); x.restore(); }));
-    const bevel = layer((x, px) => paths.forEach((p) => {
-      x.save(); x.clip(p);
-      for (let s = 30; s >= 2; s -= 2) { x.globalAlpha = .07; x.lineWidth = px * s * 2; x.stroke(p); }
-      x.restore();
-    }));
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.font = FACE; x.textBaseline = 'alphabetic'; x.textAlign = 'center';
+    const m = x.measureText(WORD);
+    const cap = m.actualBoundingBoxAscent || 80;
+    const k = Math.min(w / m.width, h / cap);
+    x.font = `900 ${100 * k}px "Big Shoulders Display"`;
+    x.fillStyle = '#fff';
+    x.fillText(WORD, w / 2, h / 2 + cap * k / 2);
+    const fill = x.getImageData(0, 0, w, h).data;
+    x.globalCompositeOperation = 'source-atop';
+    x.fillStyle = '#000'; x.fillRect(0, 0, w, h);
+    x.globalCompositeOperation = 'source-over';
+    x.strokeStyle = '#fff'; x.lineWidth = Math.max(1.5, w / 700);
+    x.save(); x.beginPath(); x.rect(0, 0, w, h); x.clip();
+    x.strokeText(WORD, w / 2, h / 2 + cap * k / 2);
+    x.restore();
+    const edge = x.getImageData(0, 0, w, h).data;
     const out = new Uint8Array(w * h * 4);
-    for (let i = 0; i < out.length; i += 4) { out[i] = fill[i + 3]; out[i + 1] = edge[i + 3]; out[i + 2] = bevel[i + 3]; out[i + 3] = 255; }
+    for (let i = 0; i < out.length; i += 4) { out[i] = fill[i + 3]; out[i + 1] = Math.min(fill[i + 3], edge[i]); out[i + 3] = 255; }
     return out;
   };
 
@@ -87,40 +85,37 @@
     vec3 c=photo(q);
     float front=dm(q).g;
 
-    // ---- AIK: on its own plane between the far sky and the near peaks
+    // ---- the world outside the letters: cold mist over the sky, the near peaks clear but cool
+    float L=dot(c,vec3(.299,.587,.114));
+    vec3 cool=mix(c,vec3(L)*vec3(.86,.94,1.06),.5)*.94;
+    float up=smoothstep(.95,.05,v.y);                              // the higher, the thicker the mist
+    vec3 mist=mix(vec3(.2,.24,.29),vec3(.46,.52,.58),up)+vec3(.3,.34,.38)*(L-.35)*.55;
+    vec3 base=mix(cool,mist,(1.-front)*(.72+.22*up));
+
+    // ---- AIK: a window through the mist, on its own plane between the far sky and the near peaks
     float fly=1.+Z*Z*7.;                                          // scroll: fly through the letters
     vec2 bc=B.xy+B.zw*.5;
     vec2 sv=bc+(v-bc)/fly-M*vec2(.006,.004);
     vec2 g=(sv-B.xy)/B.zw;
     float inside=step(0.,g.x)*step(g.x,1.)*step(0.,g.y)*step(g.y,1.);
     vec3 gs=texture2D(G,g).rgb*inside;
+    float a=0.;
     if(gs.r>.002){
-      vec2 e=GS*2.;
-      vec2 nr=vec2(texture2D(G,g+vec2(e.x,0)).b-texture2D(G,g-vec2(e.x,0)).b,
-                    texture2D(G,g+vec2(0,e.y)).b-texture2D(G,g-vec2(0,e.y)).b);
-      float clear=1.-smoothstep(.15,.9,I);                        // first clear glass, then the finished letters
-      vec2 off=nr*(.06+.2*clear)+(sv-bc)*-.016;
-      vec3 r=vec3(0.);
-      for(int k=0;k<6;k++){float a=float(k)*2.39996,rr=.0011*sqrt(float(k)+.5);
-        r+=photo(q+off+vec2(cos(a),sin(a))*rr*vec2(1.,S.x/S.y));}
-      r/=6.;
-      vec3 lift=r*1.06+(1.-r)*mix(.2,.1,clear);                   // the slab catches light: the sky reads brighter inside
-      lift=mix(lift,lift*vec3(1.05,1.,.93),.5*(1.-g.y));          // warm from above, as the sun sits behind
-      float lit=dot(normalize(nr+1e-5),normalize(vec2(.55,.8)));  // light from the upper left falls on the bevel
-      lift+=vec3(1.,.96,.9)*gs.b*.09*(.4+.6*max(lit,0.));
-      lift+=vec3(1.,.97,.93)*gs.g*mix(.95,.7,clear);              // the fine bright edge
-      lift+=vec3(1.,.95,.9)*.07*smoothstep(.0,.9,1.-g.y)*smoothstep(.2,.8,g.x+.3*(1.-g.y));  // a soft reflection across the face
-      float band=(g.x*.75+g.y*.55)-SW;                            // a slow sheet of light across the letters
-      lift+=vec3(1.,.93,.84)*exp(-band*band*80.)*(.08+.55*gs.g);
       float occ=front*(1.-smoothstep(.04,.32,Z));                 // the near ridge hides them… until we fly through
-      float a=gs.r*(1.-occ)*smoothstep(0.,.45,I)*(1.-smoothstep(.55,.92,Z))*mix(1.,.55,smoothstep(.55,1.,g.y)*(1.-Z));
-      c=mix(c,lift,a);
+      a=gs.r*(1.-occ)*smoothstep(0.,.6,I)*(1.-smoothstep(.55,.92,Z));
+      float fm=fbm(vec2(g.x*3.2+t*.03,g.y*2.2-t*.012));
+      a*=1.-smoothstep(.5,1.08,g.y+(fm-.5)*.4)*.8*(1.-Z);         // the feet of the letters stand in the fog
     }
+    vec3 win=clamp((c*vec3(1.1,1.04,.98)*1.1-.5)*1.08+.5,0.,1.);  // inside: the sky as it is, a touch richer
+    win+=vec3(1.,.96,.9)*gs.g*.18;
+    float band=(g.x*.75+g.y*.55)-SW;                              // a slow sheet of light across the letters
+    win+=vec3(1.,.93,.84)*exp(-band*band*60.)*.14*gs.r;
+    c=mix(base,win,a);
 
     // ---- mist in front of everything, drifting
-    if(v.y>.5){
-      float m=fbm(vec2(v.x*2.6+t*.018-M.x*.08,v.y*5.-t*.006))*smoothstep(.5,1.,v.y);
-      c=mix(c,vec3(.80,.76,.72)*.5,clamp(m*m*1.1,0.,.5)*(1.-Z*.6));
+    if(v.y>.45){
+      float m=fbm(vec2(v.x*2.6+t*.018-M.x*.08,v.y*5.-t*.006))*smoothstep(.45,1.,v.y);
+      c=mix(c,vec3(.55,.61,.68)*.55,clamp(m*m*1.2,0.,.55)*(1.-Z*.6));
     }
     c=mix(c,vec3(.039),smoothstep(.12,1.,Z)*.9*(1.-d*.3));       // dive: the far world sinks into the dark first
     c*=smoothstep(0.,.35,I+.08);                                  // fade up from black
@@ -183,9 +178,9 @@
       const sr = scene.getBoundingClientRect(), br = markBox.getBoundingClientRect();
       gl.uniform4f(U.B, (br.left - sr.left) / sr.width, (br.top - sr.top) / sr.height, br.width / sr.width, br.height / sr.height);
       // the letters at the size they are shown
-      const tw = Math.min(max, 2400, Math.round(br.width * dpr)), th = Math.round(tw * vb.height / vb.width);
-      if (tw && tw !== lw) {
-        lw = tw;
+      const tw = Math.min(max, 2400, Math.round(br.width * dpr)), th = Math.max(1, Math.round(tw * br.height / br.width));
+      if (tw && tw + th * 1e-4 !== lw) {
+        lw = tw + th * 1e-4;
         gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, gtex);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, tw, th, 0, gl.RGBA, gl.UNSIGNED_BYTE, letters(tw, th));
         gl.uniform2f(U.GS, 1 / tw, 1 / th);
@@ -222,7 +217,8 @@
 
   const load = (src) => new Promise((res, rej) => { const i = new Image(); i.decoding = 'async'; i.onload = () => res(i); i.onerror = rej; i.src = src; });
   const ready = (im) => (im.complete && im.naturalWidth ? Promise.resolve() : new Promise((r, j) => { im.addEventListener('load', r, { once: true }); im.addEventListener('error', j, { once: true }); }));
-  const glReady = Promise.all([ready(img), load(media + 'depth.png')])
+  const face = document.fonts ? Promise.race([document.fonts.load(FACE), new Promise((r) => setTimeout(r, 2500))]).catch(() => {}) : null;
+  const glReady = Promise.all([ready(img), load(media + 'depth.png'), face])
     .then(([, d]) => { try { return initGL(d); } catch (e) { console.warn('hero: WebGL off,', e.message); return null; } })
     .catch(() => null);
   if (loader && loader.track) loader.track(glReady, 3);

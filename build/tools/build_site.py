@@ -53,7 +53,7 @@ T = {
     stages=['Strategy', 'UX design', 'Development', 'Growth'],
     alt='Three snowy peaks above a sea of clouds at sunset'),
   lbl=dict(work='Work', problem='The problem', system='The system', process='Your path', services='Services &amp; prices', why='Why AIK', faq='Questions', contact='Contact'),
-  ghost=dict(work='WORK', system='SYSTEM', process='PATH', services='PRICES', why='AIK', contact='CONTACT'),
+  ghost=dict(work='WORK', system='SYSTEM', process='PATH', services='PRICES', why='AIK', faq='QUESTIONS', contact='CONTACT'),
   work=dict(title='Selected work', note='Concepts are labelled as concepts. Live sites open in a new tab.', live='View live', concept='Concept', site='Website', drag='Drag or scroll',
     cases=[('MA’LOA', 'Restaurants · Eschborn', 'concept', 'Homepage and franchise page for a Hawaiian poké bowl chain. Self-initiated concept, not the live maloa.com.', 'maloa-hero', 'https://maolaheropage.netlify.app/'),
            ('BLF Service', 'Trees & land · Seddiner See', 'site', 'Website for a tree, land and forestry service: services all year round, enquiries and jobs.', 'blf-service', 'https://lucky-parfait-f6d633.netlify.app/'),
@@ -146,7 +146,7 @@ T = {
     stages=['Strategie', 'UX-Design', 'Entwicklung', 'Wachstum'],
     alt='Drei verschneite Gipfel über einem Wolkenmeer bei Sonnenuntergang'),
   lbl=dict(work='Arbeiten', problem='Das Problem', system='Das System', process='Ihr Weg', services='Leistungen &amp; Preise', why='Warum AIK', faq='Fragen', contact='Kontakt'),
-  ghost=dict(work='ARBEITEN', system='SYSTEM', process='WEG', services='PREISE', why='AIK', contact='KONTAKT'),
+  ghost=dict(work='ARBEITEN', system='SYSTEM', process='WEG', services='PREISE', why='AIK', faq='FRAGEN', contact='KONTAKT'),
   work=dict(title='Ausgewählte Arbeiten', note='Konzepte sind als Konzepte gekennzeichnet. Live-Seiten öffnen in einem neuen Tab.', live='Live ansehen', concept='Konzept', site='Website', drag='Ziehen oder scrollen',
     cases=[('MA’LOA', 'Gastronomie · Eschborn', 'concept', 'Startseite und Franchise-Seite für eine Hawaiian-Poké-Bowl-Kette. Eigeninitiatives Konzept, nicht die Live-Seite maloa.com.', 'maloa-hero', 'https://maolaheropage.netlify.app/'),
            ('BLF Service', 'Baum & Land · Seddiner See', 'site', 'Website für einen Baum-, Land- und Forstservice: Leistungen das ganze Jahr, Anfragen und Jobs.', 'blf-service', 'https://lucky-parfait-f6d633.netlify.app/'),
@@ -234,6 +234,7 @@ e = html.escape
 SCENE = {'work': 'spires', 'problem': 'clouds', 'system': 'peaks', 'process': 'walls',
          'services': 'dusk', 'why': 'eagle', 'faq': 'clouds', 'contact': 'dawn'}
 SYSTEM_STILLS = ['f012', 'f096', 'f132']
+INDEX = {'work': 1, 'problem': 2, 'system': 3, 'process': 4, 'services': 5, 'why': 6, 'faq': 7, 'contact': 8}
 PATH_STILLS = ['f001', 'f060', 'f108', 'f132']
 
 
@@ -248,7 +249,7 @@ def aik_svg():
 def head(c, key, title, side='', ghost=True):
     g = c['ghost'].get(key) if ghost else None
     return (f'{f"<p class=\"ghost\" aria-hidden=\"true\">{g}</p>" if g else ""}'
-            f'<div class="sec__head"><div><p class="label" data-up>{c["lbl"][key]}</p>'
+            f'<div class="sec__head"><div><p class="label" data-up><b>[ 0{INDEX[key]} ]</b>{c["lbl"][key]}</p>'
             f'<h2 class="h2" id="{key}-title" data-blur>{title}</h2></div>{side}</div>')
 
 
@@ -294,7 +295,8 @@ def hero(c):
           <source media="(max-width: 760px) and (orientation: portrait)" srcset="{m}plate-portrait-900.webp 900w, {m}plate-portrait-1400.webp 1400w" sizes="100vw">
           <img src="{m}plate-1920.webp" srcset="{srcset}" sizes="(min-aspect-ratio: 16/9) 100vw, 112vw" alt="{h["alt"]}" width="1920" height="1080" fetchpriority="high" decoding="async">
         </picture>
-        <div class="hx__mark">{aik_svg()}</div>
+        <div class="hx__mark" data-word="AIK"><span class="hx__aik" aria-hidden="true">AIK</span></div>
+        <p class="hx__studio" aria-hidden="true">Studio</p>
         <div class="hx__shade" aria-hidden="true"></div>
       </div>
       <div class="hx__copy">
@@ -306,7 +308,6 @@ def hero(c):
           <a class="round" href="#work"><span class="round__ico" aria-hidden="true">↓</span><span>{h["cta2"]}</span></a>
         </div>
       </div>
-      <ol class="hx__stages">{stages}</ol>
       <button class="hx__skip" type="button">{h["skip"]}</button>
     </div>
   </section>'''
@@ -328,10 +329,10 @@ def work(c):
         </a></li>''')
     side = f'<p class="sec__side" data-up>{w["note"]}</p>'
     return f'''<section class="sec work" id="work" aria-labelledby="work-title" data-scene="{SCENE["work"]}">
-    <div class="work__pin">
-      <div class="wrap">{head(c, "work", w["title"], side)}</div>
+    <div class="work__pin slide">
+      <div class="slide__in">{head(c, "work", w["title"], side)}</div>
       <div class="work__rail"><ol class="work__track">{''.join(cards)}</ol></div>
-      <div class="wrap work__foot"><span class="work__bar"><i></i></span><span class="work__hint">{w["drag"]}</span></div>
+      <div class="slide__in work__foot"><span class="work__bar"><i></i></span><span class="work__hint">{w["drag"]}</span></div>
     </div>
   </section>'''
 
@@ -340,7 +341,7 @@ def problem(c):
     p = c['problem']
     pains = ''.join(f'<li class="stack__card glass"><h3>{t}</h3><p>{d}</p></li>' for t, d in p['pains'])
     return f'''<section class="sec problem" id="problem" aria-labelledby="problem-title" data-scene="{SCENE["problem"]}">
-    <div class="wrap">
+    <div class="slide slide--photo" style="background-image: url({c['b']}media/world/clouds-1920.webp)"><div class="slide__in">
       {head(c, "problem", p["title"])}
       <ol class="stack">{pains}</ol>
       <div class="stat" data-up>
@@ -349,7 +350,7 @@ def problem(c):
       </div>
       <p class="read" data-read>{p["answer"]}</p>
       <p data-up>{btn(p["cta"], "#contact", "light", True, ' data-start')}</p>
-    </div>
+    </div></div>
   </section>'''
 
 
@@ -357,14 +358,14 @@ def system(c):
     s = c['system']; b = c['b']
     steps = ''.join(f'''<li class="peak" data-up style="--d:{i * 110}">
         <img src="{b}media/stills/{SYSTEM_STILLS[i]}.webp" alt="" loading="lazy" decoding="async" width="540" height="960">
-        <div class="peak__cap glass"><p class="peak__big">{n}</p><h3>{t}</h3><p>{d}</p></div>
+        <span class="peak__i">[ 0{i + 1} ]</span><div class="peak__cap glass"><p class="peak__big">{n}</p><h3>{t}</h3><p>{d}</p></div>
       </li>''' for i, (n, t, d) in enumerate(s['steps']))
     return f'''<section class="sec system" aria-labelledby="system-title" data-scene="{SCENE["system"]}">
-    <div class="wrap">
+    <div class="slide slide--light"><div class="slide__in">
       {head(c, "system", s["title"])}
       <ol class="peaks">{steps}</ol>
       <p class="read read--sm" data-read>{s["foot"]}</p>
-    </div>
+    </div></div>
   </section>'''
 
 
@@ -382,13 +383,13 @@ def process(c):
       </li>''' for i, (t, h, d, y) in enumerate(p['steps']))
     side = f'<p class="sec__side read read--sm" data-read>{p["lead"]}</p>'
     return f'''<section class="sec process" id="process" aria-labelledby="process-title" data-scene="{SCENE["process"]}">
-    <div class="wrap">
+    <div class="slide"><div class="slide__in">
       {head(c, "process", p["title"], side)}
       <div class="path">
         <svg class="path__line" viewBox="0 0 100 1000" preserveAspectRatio="none" aria-hidden="true"><path class="path__base" d="M50 0 C 50 120, 20 140, 22 250 S 80 380, 78 500 S 20 630, 22 750 S 50 900, 50 1000"/><path class="path__draw" pathLength="1" d="M50 0 C 50 120, 20 140, 22 250 S 80 380, 78 500 S 20 630, 22 750 S 50 900, 50 1000"/></svg>
         <ol class="path__stations">{st}</ol>
       </div>
-    </div>
+    </div></div>
   </section>'''
 
 
@@ -406,7 +407,7 @@ def services(c):
     seg = lambda name, opts, on: ''.join(f'<label><input type="radio" name="{name}" value="{v}"{" checked" if v == on else ""}><span>{t}</span></label>' for v, t in opts)
     side = f'<p class="sec__side" data-up>{s["lead"]}</p>'
     return f'''<section class="sec services" id="services" aria-labelledby="services-title" data-scene="{SCENE["services"]}">
-    <div class="wrap">
+    <div class="slide slide--photo" style="background-image: url({c['b']}media/world/dusk-1920.webp)"><div class="slide__in">
       {head(c, "services", s["title"], side)}
       <ol class="packs">{''.join(packs)}</ol>
       <div class="extras" data-up><span>{s["extras_lbl"]}</span>{''.join(f'<em>{x}</em>' for x in s["extras"])}</div>
@@ -426,7 +427,7 @@ def services(c):
           {btn(k["go"], "#start", "light", True, ' data-start data-from-calc')}
         </div>
       </form>
-    </div>
+    </div></div>
   </section>'''
 
 
@@ -437,7 +438,7 @@ def why(c):
     reasons = ''.join(f'<li class="glass" data-up style="--d:{i * 70}"><h3>{t}</h3><p>{d}</p></li>' for i, (t, d) in enumerate(w['reasons']))
     social = ''.join(f'<a class="chip" href="{u}" target="_blank" rel="noopener">{n} ↗</a>' for n, u in SOCIAL)
     return f'''<section class="sec why" id="why" aria-labelledby="why-title" data-scene="{SCENE["why"]}">
-    <div class="wrap">
+    <div class="slide"><div class="slide__in">
       {head(c, "why", w["title"])}
       <div class="founder">
         <div class="founder__pic" data-up><img src="{b}media/stills/f060.webp" alt="" loading="lazy" decoding="async" width="540" height="960"><p class="founder__name">{w["name"]}<span>{w["role"]}</span></p></div>
@@ -448,7 +449,7 @@ def why(c):
       </div>
       <div class="cmp glass" data-up><table><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>
       <ul class="reasons">{reasons}</ul>
-    </div>
+    </div></div>
   </section>'''
 
 
@@ -456,10 +457,10 @@ def faq(c):
     f = c['faq']
     items = ''.join(f'<li data-up><details><summary><span>{q}</span>{PLUS}</summary><div class="faq__a"><p>{a}</p></div></details></li>' for q, a in f['items'])
     return f'''<section class="sec faq" id="faq" aria-labelledby="faq-title" data-scene="{SCENE["faq"]}">
-    <div class="wrap faq__grid">
+    <div class="slide"><p class="ghost" aria-hidden="true">{c["ghost"]["faq"]}</p><div class="slide__in faq__grid">
       <div>{head(c, "faq", f["title"], ghost=False)}</div>
       <ul class="faq__list glass">{items}</ul>
-    </div>
+    </div></div>
   </section>'''
 
 
@@ -469,10 +470,11 @@ def contact(c):
     social = ''.join(f'<a href="{u}" target="_blank" rel="noopener">{n} ↗</a>' for n, u in SOCIAL[1:])
     b = c['b']
     return f'''<section class="sec contact" id="contact" aria-labelledby="contact-title" data-scene="{SCENE["contact"]}">
+    <div class="slide slide--photo slide--contact">
     <div class="contact__bg" aria-hidden="true"><img src="{b}media/world/dawn-1920.webp" srcset="{b}media/world/dawn-1280.webp 1280w, {b}media/world/dawn-1920.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async"></div>
     <p class="ghost" aria-hidden="true">{c["ghost"]["contact"]}</p>
-    <div class="wrap">
-      <p class="label" data-up>{c["lbl"]["contact"]}</p>
+    <div class="slide__in">
+      <p class="label" data-up><b>[ 08 ]</b>{c["lbl"]["contact"]}</p>
       <h2 class="h1" id="contact-title" data-blur>{k["title"]}</h2>
       <p class="sec__lead" data-up>{k["lead"]}</p>
       <div class="go">
@@ -485,7 +487,7 @@ def contact(c):
         </a>
       </div>
       <p class="contact__more" data-up>{social}<span>{k["fine"]}</span></p>
-    </div>
+    </div></div>
   </section>'''
 
 
@@ -587,7 +589,7 @@ def page(c):
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{c["title"]}</title>
 <meta name="description" content="{c["desc"]}">
-<meta name="theme-color" content="#0b0c0e">
+<meta name="theme-color" content="#0d1117">
 <link rel="icon" type="image/png" sizes="48x48" href="{b}media/logo/icon-48.png">
 <link rel="apple-touch-icon" href="{b}media/logo/icon-180.png">
 <meta property="og:type" content="website">
@@ -598,6 +600,7 @@ def page(c):
 <link rel="alternate" hreflang="en" href="{alt_en}">
 <link rel="alternate" hreflang="de" href="{alt_de}">
 <link rel="alternate" hreflang="x-default" href="{alt_en}">
+<link rel="preload" href="{b}fonts/bigshoulders-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="{b}fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="{b}fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="{b}media/loader/aik-lockup.webp" fetchpriority="high">
