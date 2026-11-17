@@ -29,17 +29,46 @@
   $$('.nav a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && root.classList.contains('is-menu')) setMenu(false); });
 
-  /* ---------------------------------------------------- header: where am I, what is under me */
+  /* ---------------------------------------------------- header: where am I */
   const links = $$('.nav__list a[href^="#"]');
   const targets = links.map((a) => $(a.getAttribute('href')));
-  const lights = $$('.light');
+  const heroEl = $('.hx');
   onScroll.push(() => {
     const mid = innerHeight * .4; let best = -1, top = -Infinity;
     targets.forEach((s, i) => { if (!s) return; const r = s.getBoundingClientRect(); if (r.top <= mid && r.bottom > mid && r.top > top) { top = r.top; best = i; } });
     links.forEach((a, i) => a.classList.toggle('is-here', i === best));
-    const y = 40;
-    header.classList.toggle('on-light', !root.classList.contains('is-menu') && lights.some((s) => { const r = s.getBoundingClientRect(); return r.top <= y && r.bottom >= y; }));
+    header.classList.toggle('is-past', heroEl ? heroEl.getBoundingClientRect().bottom < innerHeight * .5 : scrollY > 80);
   });
+
+  /* ---------------------------------------------------- the world: one landscape per section */
+  const world = $('.world');
+  if (world) {
+    const scenes = Object.fromEntries($$('img', world).map((im) => [im.dataset.scene, im]));
+    const secs = $$('[data-scene]', $('main'));
+    const load = (im) => { if (im && !im.getAttribute('src')) { im.srcset = im.dataset.srcset; im.src = im.dataset.src; } };
+    let cur = '';
+    onScroll.push(() => {
+      const mid = innerHeight * .5; let at = null;
+      for (const s of secs) { const r = s.getBoundingClientRect(); if (r.top <= mid && r.bottom > mid) { at = s; break; } }
+      const first = secs[0] && secs[0].getBoundingClientRect().top > mid;
+      const name = at ? at.dataset.scene : (first ? secs[0].dataset.scene : cur);
+      if (name && name !== cur) {
+        cur = name; load(scenes[name]);
+        Object.entries(scenes).forEach(([k, im]) => im.classList.toggle('on', k === name));
+        const i = secs.findIndex((s) => s.dataset.scene === name);
+        if (secs[i + 1]) load(scenes[secs[i + 1].dataset.scene]);
+      }
+      if (at && !reduce) { const r = at.getBoundingClientRect(); world.style.setProperty('--z', clamp((mid - r.top) / Math.max(1, r.height)).toFixed(3)); }
+    });
+    if (secs[0]) load(scenes[secs[0].dataset.scene]);
+  }
+
+  /* ---------------------------------------------------- big words drift slower than the page */
+  const ghosts = $$('.ghost');
+  if (!reduce) onScroll.push(() => ghosts.forEach((g) => {
+    const r = g.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
+    g.style.setProperty('--gy', (-r.top * .18).toFixed(1) + 'px');
+  }));
 
   /* ---------------------------------------------------- pause motion */
   const pauses = $$('.pause');
@@ -104,13 +133,6 @@
     c.style.setProperty('--b', (1 - p * .4).toFixed(3));
   }));
 
-  /* ---------------------------------------------------- slow background drift */
-  const bgs = $$('.system__bg img');
-  if (!reduce) onScroll.push(() => bgs.forEach((b) => {
-    const r = b.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
-    b.style.setProperty('--py', `${((r.top + r.height / 2 - innerHeight / 2) / innerHeight * -70).toFixed(1)}px`);
-  }));
-
   /* ---------------------------------------------------- work: rail */
   const work = $('.work');
   if (work) {
@@ -140,22 +162,15 @@
     rail.addEventListener('click', (e) => { if (moved) { e.preventDefault(); moved = false; } }, true);
   }
 
-  /* ---------------------------------------------------- process: one step at a time, the number rolls */
-  const proc = $('.proc');
-  if (proc) {
-    const tabs = $$('.proc__tabs li', proc), steps = $$('.proc__step', proc), rolls = $$('.roll > span', proc);
-    let cur = -1;
-    const show = (i) => {
-      if (i === cur) return; cur = i;
-      tabs.forEach((t, k) => t.classList.toggle('is-on', k === i));
-      steps.forEach((s, k) => s.classList.toggle('is-on', k === i));
-      rolls[0].style.setProperty('--v', 0); rolls[1].style.setProperty('--v', i + 1);
-    };
-    show(0);
+  /* ---------------------------------------------------- process: the path draws itself, stations light up */
+  const path = $('.path');
+  if (path) {
+    const stations = $$('.station', path);
     onScroll.push(() => {
-      const r = proc.getBoundingClientRect();
-      const p = clamp(-r.top / Math.max(1, r.height - innerHeight));
-      show(Math.min(steps.length - 1, Math.floor(p * steps.length * .999)));
+      const r = path.getBoundingClientRect();
+      const p = reduce ? 1 : clamp((innerHeight * .62 - r.top) / Math.max(1, r.height));
+      path.style.setProperty('--pp', p.toFixed(4));
+      stations.forEach((st) => { const q = st.getBoundingClientRect(); st.classList.toggle('in', reduce || q.top + q.height * .5 < innerHeight * .7); });
     });
   }
 
@@ -185,6 +200,10 @@
     };
     calc.addEventListener('input', render); render();
   }
+
+  /* ---------------------------------------------------- the footer only exists once the page has ended */
+  const footEl = $('.foot'), lastSec = $('#contact');
+  if (footEl && lastSec) onScroll.push(() => footEl.classList.toggle('is-shown', lastSec.getBoundingClientRect().bottom < innerHeight + 4));
 
   /* ---------------------------------------------------- floating "Start a project" */
   const float = $('.float'), hero = $('.hx'), contact = $('#contact'), foot = $('.foot');

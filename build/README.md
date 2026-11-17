@@ -16,20 +16,19 @@ python3 -m http.server 8765        # then open http://localhost:8765
 |---|---|
 | `tools/build_site.py` | writes `index.html` and `de/index.html` (all sections, the enquiry, header, footer) |
 | `tools/partials/loader.html` | the ~0.6 s loader markup, shared by both pages |
-| `css/aik.css` | the whole design system (loader keeps `css/loader.css`) |
+| `css/aik.css` | the whole design system: one mountain world behind the page, frosted glass, Jost + Inter (loader keeps `css/loader.css`) |
 | `js/hero4.js` | Hero: photo in three depths, glass AIK in WebGL, eagle flight on desktop |
 | `js/aik.js` | menu, reveals, word highlight, stacked cards, work rail, process, calculator, six-step enquiry |
 | `js/loader.js`, `js/loader-gl.js` | the loader |
 | `tools/hero_plate.py` | builds `media/hero4/*` from one landscape photo + its traced skyline (`media/hero4/ridge.json`) |
-| `tools/make_backgrounds.py` | section backgrounds made from the same photo (`media/bg/peak-gold`, `mist-ridges`, `founder-peaks`) |
+| `tools/make_world.py` | the landscapes behind the sections (`media/world/*`) and the tall stills (`media/stills/*`), all AIK's own frames, graded to one palette |
 
 ## Replace the Hero photo
 
 1. Put the original file in `../sources/`.
 2. Trace its skyline into `media/hero4/ridge.json` (points in the photo's pixels, left to right).
 3. `python3 tools/hero_plate.py ../sources/<photo> media/hero4/ridge.json media/hero4`
-4. `python3 tools/make_backgrounds.py ../sources/<photo> media/hero4/depth.png`
-5. `python3 tools/build_site.py .`
+4. `python3 tools/build_site.py .`
 
 ## Enquiry form
 
@@ -41,7 +40,7 @@ no form backend) the visitor gets the same answers as a ready WhatsApp message t
 ## Open before launch
 
 - Impressum and Datenschutz: address, e-mail, VAT status (marked in the pages).
-- Founder photo for "Why AIK" (now a mountain image with the logo).
+- Founder photo for "Why AIK" (now the eagle still).
 - Handy-Chirurg: a screenshot for its card (now a text card linking to handychirurg.de).
 - Original Hero photo in full resolution (the current one is 1672 px wide).
 - Domain: canonical URL, sitemap, absolute og:image.

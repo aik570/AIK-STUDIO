@@ -99,16 +99,17 @@
       vec2 nr=vec2(texture2D(G,g+vec2(e.x,0)).b-texture2D(G,g-vec2(e.x,0)).b,
                     texture2D(G,g+vec2(0,e.y)).b-texture2D(G,g-vec2(0,e.y)).b);
       float clear=1.-smoothstep(.15,.9,I);                        // first clear glass, then the finished letters
-      vec2 off=nr*(.012+.2*clear)+(sv-bc)*-.01;
+      vec2 off=nr*(.06+.2*clear)+(sv-bc)*-.016;
       vec3 r=vec3(0.);
       for(int k=0;k<6;k++){float a=float(k)*2.39996,rr=.0011*sqrt(float(k)+.5);
         r+=photo(q+off+vec2(cos(a),sin(a))*rr*vec2(1.,S.x/S.y));}
       r/=6.;
-      vec3 lift=r+(1.-r)*mix(.17,.04,clear);                      // the panel catches light: clouds read brighter inside
+      vec3 lift=r*1.06+(1.-r)*mix(.2,.1,clear);                   // the slab catches light: the sky reads brighter inside
       lift=mix(lift,lift*vec3(1.05,1.,.93),.5*(1.-g.y));          // warm from above, as the sun sits behind
       float lit=dot(normalize(nr+1e-5),normalize(vec2(.55,.8)));  // light from the upper left falls on the bevel
       lift+=vec3(1.,.96,.9)*gs.b*.09*(.4+.6*max(lit,0.));
-      lift+=vec3(1.,.97,.93)*gs.g*mix(.85,.45,clear);             // the fine bright edge
+      lift+=vec3(1.,.97,.93)*gs.g*mix(.95,.7,clear);              // the fine bright edge
+      lift+=vec3(1.,.95,.9)*.07*smoothstep(.0,.9,1.-g.y)*smoothstep(.2,.8,g.x+.3*(1.-g.y));  // a soft reflection across the face
       float band=(g.x*.75+g.y*.55)-SW;                            // a slow sheet of light across the letters
       lift+=vec3(1.,.93,.84)*exp(-band*band*80.)*(.08+.55*gs.g);
       float occ=front*(1.-smoothstep(.04,.32,Z));                 // the near ridge hides them… until we fly through
@@ -176,6 +177,8 @@
       const fx = parseFloat(cs.getPropertyValue('--focus-x')) || .5;
       const fy = parseFloat(cs.getPropertyValue('--focus-y')) || .5;
       const shift = parseFloat(cs.getPropertyValue('--plate-shift')) || 0;  // photo moved down; night sky above
+      const zm = parseFloat(cs.getPropertyValue('--plate-zoom')) || 1;      // >1: the mountains come closer
+      sx /= zm; sy /= zm;
       gl.uniform2f(U.S, sx, sy); gl.uniform2f(U.O, (1 - sx) * fx, (1 - sy) * fy - shift * sy);
       const sr = scene.getBoundingClientRect(), br = markBox.getBoundingClientRect();
       gl.uniform4f(U.B, (br.left - sr.left) / sr.width, (br.top - sr.top) / sr.height, br.width / sr.width, br.height / sr.height);

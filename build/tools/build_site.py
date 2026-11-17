@@ -47,12 +47,13 @@ T = {
   skip='Skip to content', menu='Menu', close='Close',
   nav=[('#work', 'Work'), ('#services', 'Services'), ('#process', 'Approach'), ('#why', 'About'), ('#contact', 'Contact')],
   talk='Let’s talk', start='Start a project', pause='Pause motion', play='Resume motion',
-  hero=dict(kicker=['Digital experiences', 'built with intention'], h=['Your business', 'deserves', 'a better website.'],
+  hero=dict(kicker=['Digital experiences', 'built with intention'], h=['Your business deserves', 'a better website.'],
     lead='We turn your business into a digital experience that builds trust, communicates value and moves people to act.',
     cta1='Discuss your project', cta2='Explore our work', skip='Skip intro',
     stages=['Strategy', 'UX design', 'Development', 'Growth'],
     alt='Three snowy peaks above a sea of clouds at sunset'),
-  marquee=['Websites', 'Redesign', 'Landing pages', 'SEO', 'Copy', 'Care'],
+  lbl=dict(work='Work', problem='The problem', system='The system', process='Your path', services='Services &amp; prices', why='Why AIK', faq='Questions', contact='Contact'),
+  ghost=dict(work='WORK', system='SYSTEM', process='PATH', services='PRICES', why='AIK', contact='CONTACT'),
   work=dict(title='Selected work', note='Concepts are labelled as concepts. Live sites open in a new tab.', live='View live', concept='Concept', site='Website', drag='Drag or scroll',
     cases=[('MA’LOA', 'Restaurants · Eschborn', 'concept', 'Homepage and franchise page for a Hawaiian poké bowl chain. Self-initiated concept, not the live maloa.com.', 'maloa-hero', 'https://maolaheropage.netlify.app/'),
            ('BLF Service', 'Trees & land · Seddiner See', 'site', 'Website for a tree, land and forestry service: services all year round, enquiries and jobs.', 'blf-service', 'https://lucky-parfait-f6d633.netlify.app/'),
@@ -139,12 +140,13 @@ T = {
   skip='Zum Inhalt', menu='Menü', close='Schließen',
   nav=[('#work', 'Arbeiten'), ('#services', 'Leistungen'), ('#process', 'Ablauf'), ('#why', 'Über uns'), ('#contact', 'Kontakt')],
   talk='Projekt anfragen', start='Projekt starten', pause='Bewegung anhalten', play='Bewegung fortsetzen',
-  hero=dict(kicker=['Digitale Erlebnisse,', 'mit Absicht gebaut'], h=['Ihr Unternehmen', 'verdient', 'eine bessere Website.'],
+  hero=dict(kicker=['Digitale Erlebnisse,', 'mit Absicht gebaut'], h=['Ihr Unternehmen verdient', 'eine bessere Website.'],
     lead='Wir machen Ihr Unternehmen zu einem digitalen Auftritt, der Vertrauen schafft, Wert vermittelt und Menschen zum Handeln bringt.',
     cta1='Projekt besprechen', cta2='Arbeiten ansehen', skip='Intro überspringen',
     stages=['Strategie', 'UX-Design', 'Entwicklung', 'Wachstum'],
     alt='Drei verschneite Gipfel über einem Wolkenmeer bei Sonnenuntergang'),
-  marquee=['Websites', 'Redesign', 'Landingpages', 'SEO', 'Texte', 'Betreuung'],
+  lbl=dict(work='Arbeiten', problem='Das Problem', system='Das System', process='Ihr Weg', services='Leistungen &amp; Preise', why='Warum AIK', faq='Fragen', contact='Kontakt'),
+  ghost=dict(work='ARBEITEN', system='SYSTEM', process='WEG', services='PREISE', why='AIK', contact='KONTAKT'),
   work=dict(title='Ausgewählte Arbeiten', note='Konzepte sind als Konzepte gekennzeichnet. Live-Seiten öffnen in einem neuen Tab.', live='Live ansehen', concept='Konzept', site='Website', drag='Ziehen oder scrollen',
     cases=[('MA’LOA', 'Gastronomie · Eschborn', 'concept', 'Startseite und Franchise-Seite für eine Hawaiian-Poké-Bowl-Kette. Eigeninitiatives Konzept, nicht die Live-Seite maloa.com.', 'maloa-hero', 'https://maolaheropage.netlify.app/'),
            ('BLF Service', 'Baum & Land · Seddiner See', 'site', 'Website für einen Baum-, Land- und Forstservice: Leistungen das ganze Jahr, Anfragen und Jobs.', 'blf-service', 'https://lucky-parfait-f6d633.netlify.app/'),
@@ -228,6 +230,12 @@ T = {
 
 e = html.escape
 
+# which landscape each part of the page stands in (media/world/*); the hero has its own
+SCENE = {'work': 'spires', 'problem': 'clouds', 'system': 'peaks', 'process': 'walls',
+         'services': 'dusk', 'why': 'eagle', 'faq': 'clouds', 'contact': 'dawn'}
+SYSTEM_STILLS = ['f012', 'f096', 'f132']
+PATH_STILLS = ['f001', 'f060', 'f108', 'f132']
+
 
 def btn(label, href, kind='light', arrow=False, attrs=''):
     return f'<a class="btn btn--{kind}" href="{href}"{attrs}><span>{label}</span>{ARROW if arrow else ""}</a>'
@@ -235,6 +243,20 @@ def btn(label, href, kind='light', arrow=False, attrs=''):
 
 def aik_svg():
     return f'<svg viewBox="{AIK_VIEWBOX}" aria-hidden="true" focusable="false">' + ''.join(f'<path d="{d}"/>' for d in AIK_PATHS) + '</svg>'
+
+
+def head(c, key, title, side='', ghost=True):
+    g = c['ghost'].get(key) if ghost else None
+    return (f'{f"<p class=\"ghost\" aria-hidden=\"true\">{g}</p>" if g else ""}'
+            f'<div class="sec__head"><div><p class="label" data-up>{c["lbl"][key]}</p>'
+            f'<h2 class="h2" id="{key}-title" data-blur>{title}</h2></div>{side}</div>')
+
+
+def world(c):
+    b = c['b']
+    imgs = ''.join(f'<img data-scene="{n}" data-src="{b}media/world/{n}-1920.webp" data-srcset="{b}media/world/{n}-1280.webp 1280w, {b}media/world/{n}-1920.webp 1920w" sizes="100vw" alt="">'
+                   for n in sorted(set(SCENE.values())))
+    return f'<div class="world" aria-hidden="true">{imgs}</div>'
 
 
 def header(c):
@@ -253,7 +275,7 @@ def header(c):
   </nav>
   <div class="header-tools">
     <div class="lang" aria-label="Language"><a href="{en_href}" hreflang="en" lang="en"{en_cur}>EN</a><a href="{de_href}" hreflang="de" lang="de"{de_cur}>DE</a></div>
-    {btn(c["talk"], "#contact", "light", True, ' data-start')}
+    {btn(c["talk"], "#contact", "line", True, ' data-start')}
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="menu-toggle__bars" aria-hidden="true"></span><span class="menu-toggle__txt" data-open="{c["menu"]}" data-close="{c["close"]}">{c["menu"]}</span></button>
   </div>
 </header>'''
@@ -263,8 +285,8 @@ def hero(c):
     b = c['b']; m = b + 'media/hero4/'; h = c['hero']
     plate = e(json.dumps(PLATE, separators=(',', ':')))
     srcset = ', '.join(f'{m}plate-{w}.webp {w}w' for w in PLATE['sizes'])
-    lines = ''.join(f'<span class="hx__line{" hx__line--out" if i == 1 else ""}"><span style="--d:{160 + 110 * i}">{t}</span></span>' for i, t in enumerate(h['h']))
-    stages = ''.join(f'<li data-in style="--d:{700 + 70 * i}"><b>0{i + 1}</b>{s}</li>' for i, s in enumerate(h['stages']))
+    lines = ''.join(f'<span class="hx__line"><span style="--d:{220 + 120 * i}">{t}</span></span>' for i, t in enumerate(h['h']))
+    stages = ''.join(f'<li data-in style="--d:{760 + 70 * i}"><b>0{i + 1}</b>{s}</li>' for i, s in enumerate(h['stages']))
     return f'''<section class="hx" id="top" aria-labelledby="hero-title" data-media="{m}" data-plate="{plate}" data-film="{b}media/hero/flight-1920.mp4">
     <div class="hx__stage">
       <div class="hx__scene">
@@ -276,37 +298,24 @@ def hero(c):
         <div class="hx__shade" aria-hidden="true"></div>
       </div>
       <div class="hx__copy">
-        <div class="hx__main">
-          <p class="hx__kicker" data-in style="--d:60">{h["kicker"][0]}<br>{h["kicker"][1]}</p>
-          <h1 class="hx__title" id="hero-title"><span class="visually-hidden">AIK Studio: </span>{lines}</h1>
+        <p class="hx__kicker" data-in style="--d:80">{h["kicker"][0]} {h["kicker"][1]}</p>
+        <h1 class="hx__title" id="hero-title"><span class="visually-hidden">AIK Studio: </span>{lines}</h1>
+        <p class="hx__lead" data-in style="--d:520">{h["lead"]}</p>
+        <div class="hx__ctas" data-in style="--d:620">
+          {btn(h["cta1"], "#contact", "light", True, ' data-start')}
+          <a class="round" href="#work"><span class="round__ico" aria-hidden="true">↓</span><span>{h["cta2"]}</span></a>
         </div>
-        <div class="hx__side">
-          <p class="hx__lead" data-in style="--d:420">{h["lead"]}</p>
-          <div class="hx__ctas" data-in style="--d:520">
-            {btn(h["cta1"], "#contact", "light", True, ' data-start')}
-            {btn(h["cta2"], "#work", "line")}
-          </div>
-          <button class="pause" type="button" data-in style="--d:620" data-pause="{c["pause"]}" data-play="{c["play"]}" aria-pressed="false">{c["pause"]}</button>
-        </div>
-        <ol class="hx__stages">{stages}</ol>
       </div>
+      <ol class="hx__stages">{stages}</ol>
       <button class="hx__skip" type="button">{h["skip"]}</button>
     </div>
   </section>'''
 
 
-def marquee(c):
-    row = ''.join(f'<span>{w}</span>' for w in c['marquee'])
-    return f'''<div class="mq" aria-hidden="true">
-    <div class="mq__row"><div class="mq__track">{row}{row}</div></div>
-    <div class="mq__row mq__row--out"><div class="mq__track">{row}{row}</div></div>
-  </div>'''
-
-
 def work(c):
     b = c['b']; w = c['work']
     cards = []
-    for i, (name, meta, kind, txt, im, url) in enumerate(w['cases']):
+    for name, meta, kind, txt, im, url in w['cases']:
         tag = w['concept'] if kind == 'concept' else w['site']
         domain = re.sub(r'^https?://(www\.)?|/$', '', url)
         label = domain if 'netlify' not in domain else w['live']
@@ -314,15 +323,13 @@ def work(c):
                if im else f'<span class="case__type" aria-hidden="true">{e(domain)}</span>')
         cards.append(f'''<li class="case{' case--text' if not im else ''}">
         <a href="{url}" target="_blank" rel="noopener">
-          <div class="case__pic">{pic}<span class="case__tag">{tag}</span><span class="case__go">{label} ↗</span></div>
+          <div class="case__frame"><div class="case__pic">{pic}</div><span class="case__tag">{tag}</span><span class="case__go">{label} ↗</span></div>
           <div class="case__info"><h3>{name}</h3><p class="case__meta">{meta}</p><p class="case__txt">{txt}</p></div>
         </a></li>''')
-    return f'''<section class="sec work" id="work" aria-labelledby="work-title">
+    side = f'<p class="sec__side" data-up>{w["note"]}</p>'
+    return f'''<section class="sec work" id="work" aria-labelledby="work-title" data-scene="{SCENE["work"]}">
     <div class="work__pin">
-      <div class="wrap work__head">
-        <h2 class="h2" id="work-title" data-blur>{w["title"]}</h2>
-        <p class="work__note" data-up>{w["note"]}</p>
-      </div>
+      <div class="wrap">{head(c, "work", w["title"], side)}</div>
       <div class="work__rail"><ol class="work__track">{''.join(cards)}</ol></div>
       <div class="wrap work__foot"><span class="work__bar"><i></i></span><span class="work__hint">{w["drag"]}</span></div>
     </div>
@@ -331,10 +338,10 @@ def work(c):
 
 def problem(c):
     p = c['problem']
-    pains = ''.join(f'<li class="stack__card"><h3 class="h3">{t}</h3><p>{d}</p></li>' for t, d in p['pains'])
-    return f'''<section class="sec problem" id="problem" aria-labelledby="problem-title">
+    pains = ''.join(f'<li class="stack__card glass"><h3>{t}</h3><p>{d}</p></li>' for t, d in p['pains'])
+    return f'''<section class="sec problem" id="problem" aria-labelledby="problem-title" data-scene="{SCENE["problem"]}">
     <div class="wrap">
-      <h2 class="h2 problem__title" id="problem-title" data-blur>{p["title"]}</h2>
+      {head(c, "problem", p["title"])}
       <ol class="stack">{pains}</ol>
       <div class="stat" data-up>
         <p class="stat__num"><span data-count="{p["stat"]}">{p["stat"]}</span>%</p>
@@ -348,32 +355,38 @@ def problem(c):
 
 def system(c):
     s = c['system']; b = c['b']
-    steps = ''.join(f'<li data-up style="--d:{i * 90}"><p class="sys__big">{n}</p><h3>{t}</h3><p>{d}</p></li>' for i, (n, t, d) in enumerate(s['steps']))
-    return f'''<section class="sec system" aria-labelledby="system-title">
-    <div class="system__bg" aria-hidden="true"><img src="{b}media/bg/peak-gold.webp" alt="" loading="lazy" decoding="async" width="1600" height="900"></div>
+    steps = ''.join(f'''<li class="peak" data-up style="--d:{i * 110}">
+        <img src="{b}media/stills/{SYSTEM_STILLS[i]}.webp" alt="" loading="lazy" decoding="async" width="540" height="960">
+        <div class="peak__cap glass"><p class="peak__big">{n}</p><h3>{t}</h3><p>{d}</p></div>
+      </li>''' for i, (n, t, d) in enumerate(s['steps']))
+    return f'''<section class="sec system" aria-labelledby="system-title" data-scene="{SCENE["system"]}">
     <div class="wrap">
-      <h2 class="h2" id="system-title" data-blur>{s["title"]}</h2>
-      <ol class="sys">{steps}</ol>
+      {head(c, "system", s["title"])}
+      <ol class="peaks">{steps}</ol>
       <p class="read read--sm" data-read>{s["foot"]}</p>
     </div>
   </section>'''
 
 
 def process(c):
-    p = c['process']
-    tabs = ''.join(f'<li class="{"is-on" if i == 0 else ""}"><i></i>{t}</li>' for i, (t, *_ ) in enumerate(p['steps']))
-    panels = ''.join(f'''<li class="proc__step{' is-on' if i == 0 else ''}"><h3 class="h3">{h}</h3><p>{d}</p><p class="proc__you">{p["you"]}: <b>{y}</b></p></li>''' for i, (t, h, d, y) in enumerate(p['steps']))
-    digit = lambda: '<span class="roll"><span>' + ''.join(f'<b>{n}</b>' for n in range(10)) + '</span></span>'
-    return f'''<section class="sec process" id="process" aria-labelledby="process-title" style="--n:{len(p["steps"])}">
-    <div class="wrap process__intro">
-      <h2 class="h2" id="process-title" data-blur>{p["title"]}</h2>
-      <p class="read read--sm" data-read>{p["lead"]}</p>
-    </div>
-    <div class="proc">
-      <div class="proc__pin wrap">
-        <ol class="proc__tabs" aria-hidden="true">{tabs}</ol>
-        <p class="proc__num" aria-hidden="true">{digit()}{digit()}</p>
-        <ol class="proc__steps">{panels}</ol>
+    p = c['process']; b = c['b']
+    st = ''.join(f'''<li class="station{' station--r' if i % 2 else ''}" style="--i:{i}">
+        <span class="station__pic"><img src="{b}media/stills/{PATH_STILLS[i]}.webp" alt="" loading="lazy" decoding="async" width="540" height="960"></span>
+        <div class="station__txt">
+          <p class="station__n">0{i + 1}</p>
+          <h3 class="station__name">{t}</h3>
+          <p class="station__h">{h}</p>
+          <p>{d}</p>
+          <p class="station__you">{p["you"]}: <b>{y}</b></p>
+        </div>
+      </li>''' for i, (t, h, d, y) in enumerate(p['steps']))
+    side = f'<p class="sec__side read read--sm" data-read>{p["lead"]}</p>'
+    return f'''<section class="sec process" id="process" aria-labelledby="process-title" data-scene="{SCENE["process"]}">
+    <div class="wrap">
+      {head(c, "process", p["title"], side)}
+      <div class="path">
+        <svg class="path__line" viewBox="0 0 100 1000" preserveAspectRatio="none" aria-hidden="true"><path class="path__base" d="M50 0 C 50 120, 20 140, 22 250 S 80 380, 78 500 S 20 630, 22 750 S 50 900, 50 1000"/><path class="path__draw" pathLength="1" d="M50 0 C 50 120, 20 140, 22 250 S 80 380, 78 500 S 20 630, 22 750 S 50 900, 50 1000"/></svg>
+        <ol class="path__stations">{st}</ol>
       </div>
     </div>
   </section>'''
@@ -384,18 +397,20 @@ def services(c):
     packs = []
     for key, name, price, sub, items, hot in s['packs']:
         li = ''.join(f'<li>{CHECK}{x}</li>' for x in items)
-        packs.append(f'''<li class="pack{' pack--hot' if hot else ''}" data-up>
-        {f'<span class="pack__badge">{s["badge"]}</span>' if hot else ''}<p class="pack__sub">{sub}</p><h3 class="pack__name">{name}</h3><p class="pack__price">{price}</p>
+        packs.append(f'''<li class="pack glass{' pack--hot' if hot else ''}" data-up>
+        {f'<span class="pack__badge">{s["badge"]}</span>' if hot else ''}<p class="pack__sub">{sub}</p>
+        <h3 class="pack__name">{name}</h3><p class="pack__price">{price}</p>
         <ul class="pack__list">{li}</ul>
-        {btn(s["pick"], "#start", "dark" if not hot else "light", True, f' data-start data-need="{key}"')}
+        {btn(s["pick"], "#start", "light" if not hot else "dark", True, f' data-start data-need="{key}"')}
       </li>''')
     seg = lambda name, opts, on: ''.join(f'<label><input type="radio" name="{name}" value="{v}"{" checked" if v == on else ""}><span>{t}</span></label>' for v, t in opts)
-    return f'''<section class="sec light services" id="services" aria-labelledby="services-title">
+    side = f'<p class="sec__side" data-up>{s["lead"]}</p>'
+    return f'''<section class="sec services" id="services" aria-labelledby="services-title" data-scene="{SCENE["services"]}">
     <div class="wrap">
-      <div class="sec__head"><h2 class="h2" id="services-title" data-blur>{s["title"]}</h2><p class="sec__lead" data-up>{s["lead"]}</p></div>
+      {head(c, "services", s["title"], side)}
       <ol class="packs">{''.join(packs)}</ol>
       <div class="extras" data-up><span>{s["extras_lbl"]}</span>{''.join(f'<em>{x}</em>' for x in s["extras"])}</div>
-      <form class="calc" data-up data-t='{e(json.dumps(k["t"], ensure_ascii=False))}' onsubmit="return false">
+      <form class="calc glass" data-up data-t='{e(json.dumps(k["t"], ensure_ascii=False))}' onsubmit="return false">
         <div class="calc__in">
           <h3 class="h3">{k["title"]}</h3>
           <fieldset><legend>{k["type"]}</legend><div class="seg">{seg("type", k["types"], "site")}</div></fieldset>
@@ -404,7 +419,7 @@ def services(c):
           <fieldset><legend>{k["care"]}</legend><div class="seg">{seg("care", k["cares"], "0")}</div></fieldset>
         </div>
         <div class="calc__out">
-          <p class="calc__lbl">{k["out"]}</p>
+          <p class="label">{k["out"]}</p>
           <p class="calc__price" aria-live="polite">2 400 – 4 600 €</p>
           <p class="calc__care"></p>
           <p class="calc__note">{k["note"]}</p>
@@ -419,20 +434,19 @@ def why(c):
     w = c['why']; b = c['b']
     rows = ''.join(f'<tr{" class=\"us\"" if i == len(w["rows"]) - 1 else ""}><th scope="row">{r[0]}</th><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td></tr>' for i, r in enumerate(w['rows']))
     th = ''.join(f'<th scope="col">{x}</th>' for x in w['th'])
-    reasons = ''.join(f'<li data-up style="--d:{i * 70}"><h3>{t}</h3><p>{d}</p></li>' for i, (t, d) in enumerate(w['reasons']))
+    reasons = ''.join(f'<li class="glass" data-up style="--d:{i * 70}"><h3>{t}</h3><p>{d}</p></li>' for i, (t, d) in enumerate(w['reasons']))
     social = ''.join(f'<a class="chip" href="{u}" target="_blank" rel="noopener">{n} ↗</a>' for n, u in SOCIAL)
-    return f'''<section class="sec why" id="why" aria-labelledby="why-title">
+    return f'''<section class="sec why" id="why" aria-labelledby="why-title" data-scene="{SCENE["why"]}">
     <div class="wrap">
-      <h2 class="h2" id="why-title" data-blur>{w["title"]}</h2>
+      {head(c, "why", w["title"])}
       <div class="founder">
-        <div class="founder__pic" data-up><img src="{b}media/bg/founder-peaks.webp" alt="" loading="lazy" decoding="async" width="900" height="1100"><img class="founder__mark" src="{b}media/logo/aik-lockup-white.png" alt="" width="222" height="120"></div>
+        <div class="founder__pic" data-up><img src="{b}media/stills/f060.webp" alt="" loading="lazy" decoding="async" width="540" height="960"><p class="founder__name">{w["name"]}<span>{w["role"]}</span></p></div>
         <div class="founder__txt">
           <p class="read" data-read>{w["quote"]}</p>
-          <p class="founder__name" data-up>{w["name"]}<span>{w["role"]}</span></p>
           <p class="founder__links" data-up>{social}</p>
         </div>
       </div>
-      <div class="cmp" data-up><table><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>
+      <div class="cmp glass" data-up><table><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>
       <ul class="reasons">{reasons}</ul>
     </div>
   </section>'''
@@ -441,21 +455,24 @@ def why(c):
 def faq(c):
     f = c['faq']
     items = ''.join(f'<li data-up><details><summary><span>{q}</span>{PLUS}</summary><div class="faq__a"><p>{a}</p></div></details></li>' for q, a in f['items'])
-    return f'''<section class="sec light faq" id="faq" aria-labelledby="faq-title">
+    return f'''<section class="sec faq" id="faq" aria-labelledby="faq-title" data-scene="{SCENE["faq"]}">
     <div class="wrap faq__grid">
-      <h2 class="h2" id="faq-title" data-blur>{f["title"]}</h2>
-      <ul class="faq__list">{items}</ul>
+      <div>{head(c, "faq", f["title"], ghost=False)}</div>
+      <ul class="faq__list glass">{items}</ul>
     </div>
   </section>'''
 
 
 def contact(c):
-    k = c['contact']; b = c['b']
+    k = c['contact']
     badge = ''.join(f'<span style="--i:{i}">{ch}</span>' for i, ch in enumerate(k['badge']))
     social = ''.join(f'<a href="{u}" target="_blank" rel="noopener">{n} ↗</a>' for n, u in SOCIAL[1:])
-    return f'''<section class="sec contact" id="contact" aria-labelledby="contact-title">
-    <div class="contact__bg" aria-hidden="true"><img src="{b}media/bg/mist-ridges.webp" alt="" loading="lazy" decoding="async" width="1920" height="1080"></div>
+    b = c['b']
+    return f'''<section class="sec contact" id="contact" aria-labelledby="contact-title" data-scene="{SCENE["contact"]}">
+    <div class="contact__bg" aria-hidden="true"><img src="{b}media/world/dawn-1920.webp" srcset="{b}media/world/dawn-1280.webp 1280w, {b}media/world/dawn-1920.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async"></div>
+    <p class="ghost" aria-hidden="true">{c["ghost"]["contact"]}</p>
     <div class="wrap">
+      <p class="label" data-up>{c["lbl"]["contact"]}</p>
       <h2 class="h1" id="contact-title" data-blur>{k["title"]}</h2>
       <p class="sec__lead" data-up>{k["lead"]}</p>
       <div class="go">
@@ -463,7 +480,7 @@ def contact(c):
           <span class="go__ico">{BUBBLE}</span><span class="go__t">{k["start"]}</span><span class="go__s">{k["start_sub"]}</span>
           <span class="badge" aria-hidden="true"><span class="badge__ring" style="--n:{len(k["badge"])}">{badge}</span><b>→</b></span>
         </a>
-        <a class="go__card" href="https://wa.me/{WA}" target="_blank" rel="noopener" data-up style="--d:90">
+        <a class="go__card glass" href="https://wa.me/{WA}" target="_blank" rel="noopener" data-up style="--d:90">
           <span class="go__ico">{PHONE}</span><span class="go__t">{k["wa"]}</span><span class="go__s">{WA_SHOW}</span>
         </a>
       </div>
@@ -486,9 +503,8 @@ def footer(c):
         <div><p>{f["services"]}</p><ul>{svc}</ul></div>
         <div><p>{f["contact"]}</p><ul>{soc}</ul></div>
       </div>
-      <p class="foot__who">{f["who"]}</p>
-      <p class="foot__mega" aria-hidden="true">AIK Studio</p>
-      <div class="foot__base"><span>{f["copy"]}</span>{legal}<button class="pause" type="button" data-pause="{c["pause"]}" data-play="{c["play"]}" aria-pressed="false">{c["pause"]}</button><a href="#top">{f["top"]} ↑</a></div>
+      <p class="foot__mega" aria-hidden="true">AIK STUDIO</p>
+      <div class="foot__base"><span>{f["who"]}</span><span>{f["copy"]}</span>{legal}<button class="pause" type="button" data-pause="{c["pause"]}" data-play="{c["play"]}" aria-pressed="false">{c["pause"]}</button><a href="#top">{f["top"]} ↑</a></div>
     </div>
   </footer>'''
 
@@ -507,7 +523,7 @@ def form(c):
             <input class="range" type="range" name="budget" min="900" max="7000" step="100" value="2400" aria-label="Budget">
             <p class="budget__ends"><span>900 €</span><span>{'7.000' if c['lang'] == 'de' else '7 000'} € +</span></p>'''
         elif st['name'] == 'way':
-            body = '<div class="ways">' + ''.join(f'''<label class="way{' way--dark' if v == 'call' else ''}"><input type="radio" name="way" value="{v}"><span class="way__ico">{PHONE if v == 'call' else BUBBLE}</span><b>{t}</b><span>{d}</span></label>''' for v, t, d in st['o']) + '</div>'
+            body = '<div class="ways">' + ''.join(f'''<label class="way{' way--light' if v == 'call' else ''}"><input type="radio" name="way" value="{v}"><span class="way__ico">{PHONE if v == 'call' else BUBBLE}</span><b>{t}</b><span>{d}</span></label>''' for v, t, d in st['o']) + '</div>'
         else:
             ff = f['f']
             body = f'''<div class="fields">
@@ -538,17 +554,17 @@ def form(c):
       {''.join(steps)}
       <div class="q q--done" data-step="done" hidden>
         <p class="q__t">{f["ok_t"]}</p><p class="q__h">{f["ok"]}</p>
-        <p>{btn(f["ok_wa"], "#", "dark", True, ' data-wa-link target="_blank" rel="noopener"')}</p>
+        <p>{btn(f["ok_wa"], "#", "light", True, ' data-wa-link target="_blank" rel="noopener"')}</p>
       </div>
       <div class="q q--err" data-step="err" hidden>
         <p class="q__h">{f["err"]}</p>
-        <p>{btn(f["err_wa"], "#", "dark", True, ' data-wa-link target="_blank" rel="noopener"')}</p>
+        <p>{btn(f["err_wa"], "#", "light", True, ' data-wa-link target="_blank" rel="noopener"')}</p>
       </div>
     </div>
     <div class="sheet__nav">
-      <button class="btn btn--line-dark" type="button" data-back hidden><span>{f["back"]}</span></button>
-      <button class="btn btn--dark" type="button" data-next disabled><span>{f["next"]}</span></button>
-      <button class="btn btn--dark" type="submit" data-send hidden data-sending="{f["sending"]}"><span>{f["send"]}</span></button>
+      <button class="btn btn--line" type="button" data-back hidden><span>{f["back"]}</span></button>
+      <button class="btn btn--light" type="button" data-next disabled><span>{f["next"]}</span></button>
+      <button class="btn btn--light" type="submit" data-send hidden data-sending="{f["sending"]}"><span>{f["send"]}</span></button>
       <p class="sheet__fine">{f["fine"]}</p>
     </div>
   </form>
@@ -571,7 +587,7 @@ def page(c):
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{c["title"]}</title>
 <meta name="description" content="{c["desc"]}">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#0b0c0e">
 <link rel="icon" type="image/png" sizes="48x48" href="{b}media/logo/icon-48.png">
 <link rel="apple-touch-icon" href="{b}media/logo/icon-180.png">
 <meta property="og:type" content="website">
@@ -582,7 +598,7 @@ def page(c):
 <link rel="alternate" hreflang="en" href="{alt_en}">
 <link rel="alternate" hreflang="de" href="{alt_de}">
 <link rel="alternate" hreflang="x-default" href="{alt_en}">
-<link rel="preload" href="{b}fonts/bowlby-one-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{b}fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="{b}fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="{b}media/loader/aik-lockup.webp" fetchpriority="high">
 <link rel="preload" as="image" href="{b}media/hero4/plate-1920.webp" imagesrcset="{', '.join(f'{b}media/hero4/plate-{w}.webp {w}w' for w in PLATE['sizes'])}" imagesizes="(min-aspect-ratio: 16/9) 100vw, 112vw" media="(min-width: 761px), (orientation: landscape)" fetchpriority="high">
@@ -591,11 +607,11 @@ def page(c):
 <link rel="stylesheet" href="{b}css/aik.css">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
 {loader}
+{world(c)}
 {header(c)}
 
 <main id="main">
   {hero(c)}
-  {marquee(c)}
   {work(c)}
   {problem(c)}
   {system(c)}
