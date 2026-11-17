@@ -7,5 +7,4 @@
   command = "python3 tools/build_legal.py . && python3 tools/build_site.py . && python3 tools/dist.py . dist"
   publish = "dist"
 
-[build.environment]
-  PYTHON_VERSION = "3.11"
+# Python: tools run on 3.11 to 3.13; Netlify's default build image is fine.

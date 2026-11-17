@@ -311,7 +311,8 @@ def aik_svg():
 
 def head(c, key, title, side='', ghost=True):
     g = c['ghost'].get(key) if ghost else None
-    return (f'{f"<p class=\"ghost\" aria-hidden=\"true\">{g}</p>" if g else ""}'
+    ghost_html = f'<p class="ghost" aria-hidden="true">{g}</p>' if g else ''
+    return (f'{ghost_html}'
             f'<div class="sec__head"><div><p class="label" data-up><b>[ 0{INDEX[key]} ]</b>{c["lbl"][key]}</p>'
             f'<h2 class="h2" id="{key}-title" data-blur>{title}</h2></div>{side}</div>')
 
