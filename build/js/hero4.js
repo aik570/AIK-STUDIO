@@ -64,6 +64,7 @@
     vec2 u=v*S+O;
     float d=dm(u).r; vec2 q=move(u,d); d=dm(q).r; q=move(u,d);
     vec3 c=texture2D(T,clamp(q,0.,1.)).rgb;
+    c=mix(vec3(.04),c,smoothstep(-.02,.16,q.y));                 // above the photo: night sky
     float front=dm(q).g;
 
     // ---- glass AIK: lives on its own plane between the far sky and the near peaks
@@ -81,14 +82,15 @@
                     texture2D(G,gt+vec2(0,e.y)).g-texture2D(G,gt-vec2(0,e.y)).g)*inside;
       float steep=clamp(length(nr)*5.,0.,1.);
       vec2 nd=nr/(length(nr)+1e-4);
-      vec2 off=-nr*vec2(1.6,2.2)*(.4+.6*I)+(sv-bc)*-.05;         // the bevel bends the light; the face is a weak lens
+      vec2 off=-nr*vec2(1.2,1.7)*(.4+.6*I)+(sv-bc)*-.018;         // the bevel bends the light; the face is a weak lens
       vec3 r=vec3(0.);
       for(int k=0;k<10;k++){                                      // frosted face: average around the bent ray
         float a=float(k)*2.39996, rr=.0022*sqrt(float(k)+.5);
-        r+=texture2D(T,clamp(q+off+vec2(cos(a),sin(a))*rr*vec2(1.,S.x/S.y),0.,1.)).rgb;
+        vec2 rq=q+off+vec2(cos(a),sin(a))*rr*vec2(1.,S.x/S.y);
+        r+=mix(vec3(.04),texture2D(T,clamp(rq,0.,1.)).rgb,smoothstep(-.02,.16,rq.y));
       }
       r/=10.;
-      vec3 gl=mix(r,vec3(dot(r,vec3(.3,.59,.11))),.12)*1.18+vec3(.075,.074,.08)*(1.15-g.y*.5);
+      vec3 gl=mix(r,vec3(dot(r,vec3(.3,.59,.11))),.1)*1.16+vec3(1.,.86,.7)*(.05+.13*(1.-g.y));   // warm light falls in from above
       float lit=dot(-nd,normalize(vec2(-.55,-.85)));              // outward normal · light from the upper left
       gl+=vec3(1.,.95,.88)*gs.b*(.18+.82*max(lit,0.))*.9;         // the rim that faces the light
       gl*=1.-gs.b*.35*max(-lit,0.);                               // the rim that turns away
@@ -96,7 +98,7 @@
       float band=(g.x*.75+g.y*.55)-SW;                            // a slow sheet of light across the letters
       gl+=vec3(1.,.92,.82)*exp(-band*band*60.)*(.16+.5*gs.b+.3*steep);
       float occ=front*(1.-smoothstep(.04,.32,Z));                 // the near ridge hides the glass… until we fly through
-      float a=shape*(1.-occ)*smoothstep(0.,.55,I)*(1.-smoothstep(.55,.92,Z));
+      float a=shape*(1.-occ)*smoothstep(0.,.55,I)*(1.-smoothstep(.55,.92,Z))*mix(1.,.42,smoothstep(.5,1.,g.y)*(1.-Z));   // poster: the letters thin out into the haze
       c=mix(c,gl,a);
     }
 
@@ -161,8 +163,11 @@
       cv.width = w; cv.height = h; gl.viewport(0, 0, w, h);
       const car = w / h; let sx = 1, sy = 1;
       if (car > ar) sy = ar / car; else sx = car / ar;                  // object-fit: cover
-      const fx = parseFloat(getComputedStyle(sec).getPropertyValue('--focus-x')) || .5;
-      gl.uniform2f(U.S, sx, sy); gl.uniform2f(U.O, (1 - sx) * fx, (1 - sy) * .5); gl.uniform2f(U.R, w, h);
+      const cs = getComputedStyle(sec);
+      const fx = parseFloat(cs.getPropertyValue('--focus-x')) || .5;
+      const fy = parseFloat(cs.getPropertyValue('--focus-y')) || .5;
+      const sh = parseFloat(cs.getPropertyValue('--plate-shift')) || 0;  // move the photo down (fraction of the screen); the sky above fades to black
+      gl.uniform2f(U.S, sx, sy); gl.uniform2f(U.O, (1 - sx) * fx, (1 - sy) * fy - sh * sy); gl.uniform2f(U.R, w, h);
       const sr = scene.getBoundingClientRect(), br = markBox.getBoundingClientRect();
       gl.uniform4f(U.B, (br.left - sr.left) / sr.width, (br.top - sr.top) / sr.height, br.width / sr.width, br.height / sr.height);
     };

@@ -29,17 +29,22 @@ pts = (np.array(R['pts'], np.float32) * k)
 def webp(path, img, q=86):
     cv2.imwrite(path, img, [cv2.IMWRITE_WEBP_QUALITY, q])
 
+sizes = [w for w in (1280, 1920, 2880, 3840) if w <= max(W, 1920)]
 for w in (1280, 1920, 2880, 3840):
-    if w > W: continue
+    f = f'{out}/plate-{w}.webp'
+    if w not in sizes:
+        if os.path.exists(f): os.remove(f)                      # stale file from a bigger source
+        continue
     h = round(H * w / W)
-    webp(f'{out}/plate-{w}.webp', cv2.resize(im, (w, h), interpolation=cv2.INTER_AREA), 84 if w > 2000 else 86)
+    r = cv2.resize(im, (w, h), interpolation=cv2.INTER_AREA if w <= W else cv2.INTER_LANCZOS4)
+    webp(f, r, 84 if w > 2000 else 88)
 
 # phones: 9:16 crop, full height, centred on the main peak
 cw = round(H * 9 / 16); cx = int(np.clip(FOCUS_X * W - cw / 2, 0, W - cw))
 crop = im[:, cx:cx + cw]
 for w in (900, 1400):
     webp(f'{out}/plate-portrait-{w}.webp', cv2.resize(crop, (w, round(w * 16 / 9)), interpolation=cv2.INTER_AREA), 84)
-json.dump({'portrait_x0': cx / W, 'portrait_w': cw / W, 'aspect': W / H}, open(f'{out}/plate.json', 'w'))
+json.dump({'portrait_x0': cx / W, 'portrait_w': cw / W, 'aspect': W / H, 'sizes': sizes}, open(f'{out}/plate.json', 'w'))
 
 # depth + front mask, at 1920 px
 dw = 1920; dh = round(H * dw / W); s = dw / W
