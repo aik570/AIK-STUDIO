@@ -27,6 +27,8 @@ R = json.load(open(ridge_p)); k = W / R['w']
 pts = (np.array(R['pts'], np.float32) * k)
 
 def webp(path, img, q=86):
+    soft = cv2.GaussianBlur(img, (0, 0), 1.0)
+    img = cv2.addWeighted(img, 1.5, soft, -.5, 0)                       # a careful unsharp mask: the source is soft
     cv2.imwrite(path, img, [cv2.IMWRITE_WEBP_QUALITY, q])
 
 sizes = [w for w in (1280, 1920, 2880, 3840) if w <= max(W, 1920)]

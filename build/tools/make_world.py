@@ -30,7 +30,10 @@ def grade(im, dark=1.0):
 def save(path, im, w, h=None, q=74):
     hh = h or round(im.shape[0] * w / im.shape[1])
     interp = cv2.INTER_AREA if w < im.shape[1] else cv2.INTER_LANCZOS4
-    cv2.imwrite(path, cv2.resize(im, (w, hh), interpolation=interp), [cv2.IMWRITE_WEBP_QUALITY, q])
+    r = cv2.resize(im, (w, hh), interpolation=interp)
+    soft = cv2.GaussianBlur(r, (0, 0), 1.1)
+    r = cv2.addWeighted(r, 1.55, soft, -.55, 0)                         # the frames are soft: a careful unsharp mask
+    cv2.imwrite(path, r, [cv2.IMWRITE_WEBP_QUALITY, q])
 
 
 scenes = {

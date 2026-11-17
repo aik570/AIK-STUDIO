@@ -102,12 +102,18 @@
     float a=0.;
     if(gs.r>.002){
       float occ=front*(1.-smoothstep(.04,.32,Z));                 // the near ridge hides them… until we fly through
-      a=gs.r*(1.-occ)*smoothstep(0.,.6,I)*(1.-smoothstep(.55,.92,Z));
+      a=gs.r*(1.-occ*.66)*smoothstep(0.,.6,I)*(1.-smoothstep(.55,.92,Z));   // over the near peaks the word stays as a faint window
       float fm=fbm(vec2(g.x*3.2+t*.03,g.y*2.2-t*.012));
       a*=1.-smoothstep(.5,1.08,g.y+(fm-.5)*.4)*.8*(1.-Z);         // the feet of the letters stand in the fog
     }
-    vec3 win=clamp((c*vec3(1.1,1.04,.98)*1.1-.5)*1.08+.5,0.,1.);  // inside: the sky as it is, a touch richer
-    win+=vec3(1.,.96,.9)*gs.g*.18;
+    vec3 win=clamp((c*vec3(1.16,1.06,.95)*1.22-.5)*1.16+.5,0.,1.); // inside: the sky clear, warmer and richer
+    win+=vec3(1.,.96,.9)*gs.g*.32;
+    // a soft shadow under the word lifts it off the mist
+    vec2 so=vec2(.006,.012);
+    float sh=0.;
+    for(int k=0;k<5;k++){float f=float(k)-2.;sh+=texture2D(G,clamp(g-so+vec2(f*.004,abs(f)*.004),0.,1.)).r;}
+    sh=sh/5.*inside*(1.-front*.7);
+    base*=1.-sh*.32*(1.-gs.r);
     float band=(g.x*.75+g.y*.55)-SW;                              // a slow sheet of light across the letters
     win+=vec3(1.,.93,.84)*exp(-band*band*60.)*.14*gs.r;
     c=mix(base,win,a);

@@ -135,33 +135,47 @@
     c.style.setProperty('--b', (1 - p * .4).toFixed(3));
   }));
 
-  /* ---------------------------------------------------- work: rail */
-  const work = $('.work');
-  if (work) {
-    const rail = $('.work__rail', work), track = $('.work__track', work), bar = $('.work__bar', work);
-    const pinMQ = matchMedia('(min-width: 961px) and (hover: hover)');
-    let over = 0;
-    const layout = () => {
-      const pin = pinMQ.matches && !reduce;
-      work.classList.toggle('is-pinned', pin);
-      if (!pin) { work.style.removeProperty('--h'); return; }
-      over = Math.max(0, track.scrollWidth - rail.clientWidth + parseFloat(getComputedStyle(rail).paddingLeft) * 2);
-      work.style.setProperty('--h', `${innerHeight + over}px`);
-    };
-    layout(); addEventListener('resize', layout); pinMQ.addEventListener('change', layout);
-    onScroll.push(() => {
-      if (work.classList.contains('is-pinned')) {
-        const r = work.getBoundingClientRect(); const p = clamp(-r.top / Math.max(1, over));
-        work.style.setProperty('--x', (p * over).toFixed(1)); bar.style.setProperty('--p', (.08 + p * .92).toFixed(3));
+  /* ---------------------------------------------------- work: a reel that turns by itself
+     The cards drift sideways on their own and bend away at the edges like a curved ribbon.
+     Hover slows it down, a drag (mouse or finger) moves it, the motion pause stops it. */
+  const reel = $('[data-reel]');
+  if (reel) {
+    const track = $('.reel__track', reel);
+    const cards = $$('.case', reel);
+    let x = 0, half = 0, speed = 38, target = 38, last = performance.now(), drag = null, moved = false, vis = true;
+    const measure = () => { half = track.scrollWidth / 2; };
+    measure(); addEventListener('resize', measure);
+    new IntersectionObserver(([en]) => { vis = en.isIntersecting; }).observe(reel);
+    reel.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') target = 10; });
+    reel.addEventListener('pointerleave', () => { target = 38; });
+    reel.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, x0: x, id: e.pointerId }; moved = false; });
+    addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x;
+      if (!moved && Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(e.clientY - drag.y)) { moved = true; reel.classList.add('is-drag'); }
+      if (moved) x = drag.x0 - dx;
+    }, { passive: true });
+    const up = () => { drag = null; reel.classList.remove('is-drag'); };
+    addEventListener('pointerup', up); addEventListener('pointercancel', up);
+    reel.addEventListener('click', (e) => { if (moved) { e.preventDefault(); moved = false; } }, true);
+    const frame = (now) => {
+      const dt = Math.min(64, now - last) / 1000; last = now;
+      if (vis) {
+        const still = reduce || root.classList.contains('is-still');
+        speed += ((still ? 0 : target) - speed) * Math.min(1, dt * 3);
+        if (!drag) x += speed * dt;
+        if (half) { x = ((x % half) + half) % half; }
+        track.style.setProperty('--rx', `${(-x).toFixed(1)}px`);
+        const W = reel.clientWidth, cx = reel.getBoundingClientRect().left + W / 2;
+        cards.forEach((c) => {
+          const r = c.getBoundingClientRect(); const k = Math.max(-1.4, Math.min(1.4, (r.left + r.width / 2 - cx) / (W / 2)));
+          c.style.setProperty('--ry', `${(-k * 22).toFixed(2)}deg`);
+          c.style.setProperty('--rz', `${(-Math.abs(k) * 90).toFixed(1)}px`);
+        });
       }
-    });
-    rail.addEventListener('scroll', () => bar.style.setProperty('--p', (.08 + rail.scrollLeft / Math.max(1, rail.scrollWidth - rail.clientWidth) * .92).toFixed(3)), { passive: true });
-    // drag with the mouse where the rail scrolls natively
-    let down = null, moved = false;
-    rail.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse' || work.classList.contains('is-pinned')) return; down = { x: e.clientX, s: rail.scrollLeft }; moved = false; });
-    addEventListener('pointermove', (e) => { if (!down) return; const dx = e.clientX - down.x; if (Math.abs(dx) > 4) { moved = true; rail.classList.add('is-drag'); } rail.scrollLeft = down.s - dx; });
-    addEventListener('pointerup', () => { down = null; rail.classList.remove('is-drag'); });
-    rail.addEventListener('click', (e) => { if (moved) { e.preventDefault(); moved = false; } }, true);
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
   }
 
   /* ---------------------------------------------------- process: the path draws itself, stations light up */
@@ -199,6 +213,7 @@
       care.textContent = mo ? T.care.replace('{n}', mo) : T.noCare;
       fill(pages);
       estimate = { type, budget: hi ? Math.round((lo + hi) / 2 / 100) * 100 : Math.max(lo, 6900) };
+      const outEl = $('.calc__out', calc); if (outEl) outEl.style.setProperty('--mh', clamp(.3 + ((hi || 7200) - 1400) / 6000 * .7, .3, 1).toFixed(3));
     };
     calc.addEventListener('input', render); render();
   }

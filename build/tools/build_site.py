@@ -238,6 +238,57 @@ INDEX = {'work': 1, 'problem': 2, 'system': 3, 'process': 4, 'services': 5, 'why
 PATH_STILLS = ['f001', 'f060', 'f108', 'f132']
 
 
+EXTRA = {
+    'en': dict(path=['Offer', 'Proof', 'Price', 'Enquiry'], click='Get a quote', corner=[('Digital experiences', 'built with intention'), ('Potsdam · Berlin', 'Germany')],
+               facts=[('1', 'person you talk to: the founder'), ('1 day', 'until you get a reply'), ('DE · EN', 'websites in both languages'), ('100 %', 'of the access is handed to you')],
+               vs_up='Upside', vs_down='Downside', vs_badge='Your choice?', word='LET’S TALK', faq_more='Still a question? Write on WhatsApp',
+               prices='PRICES', from_='from', ans='answers'),
+    'de': dict(path=['Angebot', 'Beweise', 'Preis', 'Anfrage'], click='Angebot anfragen', corner=[('Digitale Erlebnisse,', 'mit Absicht gebaut'), ('Potsdam · Berlin', 'Deutschland')],
+               facts=[('1', 'Ansprechpartner: der Gründer'), ('1 Tag', 'bis zur Antwort'), ('DE · EN', 'Websites in beiden Sprachen'), ('100 %', 'der Zugänge gehören Ihnen')],
+               vs_up='Vorteil', vs_down='Nachteil', vs_badge='Ihre Wahl?', word='SPRECHEN WIR', faq_more='Noch eine Frage? Schreiben Sie per WhatsApp',
+               prices='PREISE', from_='ab', ans='Antworten'),
+}
+
+# ------------------------------------------------------------ small drawings for the problem (crisp, made in code)
+ILL = {
+'slow': '''<svg viewBox="0 0 400 250" class="ill" aria-hidden="true">
+  <rect x="20" y="16" width="360" height="218" rx="16" class="ill__frame"/>
+  <path d="M20 50h360" class="ill__line"/><circle cx="42" cy="33" r="4.5" class="ill__dot"/><circle cx="58" cy="33" r="4.5" class="ill__dot"/><circle cx="74" cy="33" r="4.5" class="ill__dot"/>
+  <rect x="104" y="25" width="190" height="16" rx="8" class="ill__soft"/>
+  <rect x="20" y="49" width="104" height="3" class="ill__bar"/>
+  <g class="ill__skel"><rect x="44" y="76" width="150" height="16" rx="5"/><rect x="44" y="102" width="110" height="10" rx="5"/><rect x="44" y="128" width="312" height="80" rx="10"/><rect x="230" y="76" width="126" height="36" rx="10"/></g>
+  <g transform="translate(200 168)"><g class="ill__spin"><circle r="18" class="ill__ring"/><path d="M0 -18a18 18 0 0 1 18 18" class="ill__arc"/></g></g>
+</svg>''',
+'phone': '''<svg viewBox="0 0 400 250" class="ill" aria-hidden="true">
+  <defs><clipPath id="ill-ph"><rect x="152" y="22" width="96" height="206" rx="16"/></clipPath></defs>
+  <g class="ill__ghost"><rect x="40" y="50" width="320" height="150" rx="10"/><path d="M40 72h320"/></g>
+  <g clip-path="url(#ill-ph)" class="ill__squeeze">
+    <rect x="96" y="40" width="210" height="14" rx="3" class="ill__soft"/>
+    <rect x="96" y="62" width="210" height="62" rx="4" class="ill__img"/>
+    <g class="ill__skel"><rect x="96" y="132" width="64" height="44" rx="3"/><rect x="168" y="132" width="64" height="44" rx="3"/><rect x="240" y="132" width="64" height="44" rx="3"/>
+    <rect x="96" y="184" width="150" height="5" rx="2"/><rect x="96" y="194" width="120" height="5" rx="2"/><rect x="96" y="204" width="170" height="5" rx="2"/></g>
+  </g>
+  <rect x="152" y="22" width="96" height="206" rx="16" class="ill__frame ill__frame--hi"/>
+  <rect x="186" y="30" width="28" height="6" rx="3" class="ill__dot"/>
+  <path d="M120 126l-14 0m0 0l6 -6m-6 6l6 6M280 126l14 0m0 0l-6 -6m6 6l-6 6" class="ill__arrows"/>
+</svg>''',
+'path': '''<svg viewBox="0 0 400 250" class="ill" aria-hidden="true">
+  <g class="ill__btns"><rect x="40" y="40" width="92" height="30" rx="15"/><rect x="250" y="34" width="110" height="30" rx="15"/><rect x="60" y="176" width="100" height="30" rx="15"/><rect x="262" y="170" width="92" height="30" rx="15"/><rect x="160" y="104" width="80" height="30" rx="15"/></g>
+  <path d="M86 56 C 150 90, 120 150, 108 190 S 230 230, 306 186 S 330 90, 302 50 S 210 70, 200 118" class="ill__wander"/>
+  <g class="ill__cursor"><path d="M0 0 L0 22 L6 16 L11 27 L15 25 L10 14 L18 14 Z"/></g>
+  <circle cx="200" cy="119" r="22" class="ill__q"/><text x="200" y="127" text-anchor="middle" class="ill__qt">?</text>
+</svg>''',
+'small': '''<svg viewBox="0 0 400 250" class="ill" aria-hidden="true">
+  <path d="M10 232 L118 92 L162 140 L222 40 L300 140 L338 104 L392 232 Z" class="ill__mount"/>
+  <path d="M190 74 L222 40 L250 77 L236 72 L222 80 L206 70 Z" class="ill__snow"/>
+  <g transform="translate(250 176)"><rect width="74" height="50" rx="7" class="ill__frame ill__frame--hi"/><path d="M0 12h74" class="ill__line"/><circle cx="9" cy="6" r="2" class="ill__dot"/><circle cx="16" cy="6" r="2" class="ill__dot"/><rect x="8" y="20" width="36" height="5" rx="2" class="ill__soft"/><rect x="8" y="30" width="58" height="12" rx="3" class="ill__soft"/></g>
+  <g class="ill__lens" transform="translate(306 168)"><circle r="22" class="ill__ring"/><path d="M16 16 L30 30" class="ill__arc"/></g>
+</svg>''',
+}
+PAIN_ILL = ['slow', 'phone', 'path', 'small']
+CURSOR = '<svg class="cur" viewBox="0 0 20 30" aria-hidden="true"><path d="M1 1 L1 23 L7 17 L12 28 L16 26 L11 15 L19 15 Z"/></svg>'
+
+
 def btn(label, href, kind='light', arrow=False, attrs=''):
     return f'<a class="btn btn--{kind}" href="{href}"{attrs}><span>{label}</span>{ARROW if arrow else ""}</a>'
 
@@ -283,11 +334,11 @@ def header(c):
 
 
 def hero(c):
-    b = c['b']; m = b + 'media/hero4/'; h = c['hero']
+    b = c['b']; m = b + 'media/hero4/'; h = c['hero']; x = EXTRA[c['lang']]
     plate = e(json.dumps(PLATE, separators=(',', ':')))
     srcset = ', '.join(f'{m}plate-{w}.webp {w}w' for w in PLATE['sizes'])
     lines = ''.join(f'<span class="hx__line"><span style="--d:{220 + 120 * i}">{t}</span></span>' for i, t in enumerate(h['h']))
-    stages = ''.join(f'<li data-in style="--d:{760 + 70 * i}"><b>0{i + 1}</b>{s}</li>' for i, s in enumerate(h['stages']))
+    (l1, l2), (r1, r2) = x['corner']
     return f'''<section class="hx" id="top" aria-labelledby="hero-title" data-media="{m}" data-plate="{plate}" data-film="{b}media/hero/flight-1920.mp4">
     <div class="hx__stage">
       <div class="hx__scene">
@@ -296,11 +347,10 @@ def hero(c):
           <img src="{m}plate-1920.webp" srcset="{srcset}" sizes="(min-aspect-ratio: 16/9) 100vw, 112vw" alt="{h["alt"]}" width="1920" height="1080" fetchpriority="high" decoding="async">
         </picture>
         <div class="hx__mark" data-word="AIK"><span class="hx__aik" aria-hidden="true">AIK</span></div>
-        <p class="hx__studio" aria-hidden="true">Studio</p>
         <div class="hx__shade" aria-hidden="true"></div>
       </div>
       <div class="hx__copy">
-        <p class="hx__kicker" data-in style="--d:80">{h["kicker"][0]} {h["kicker"][1]}</p>
+        <p class="hx__studio" aria-hidden="true" data-in style="--d:80">Studio</p>
         <h1 class="hx__title" id="hero-title"><span class="visually-hidden">AIK Studio: </span>{lines}</h1>
         <p class="hx__lead" data-in style="--d:520">{h["lead"]}</p>
         <div class="hx__ctas" data-in style="--d:620">
@@ -308,6 +358,8 @@ def hero(c):
           <a class="round" href="#work"><span class="round__ico" aria-hidden="true">↓</span><span>{h["cta2"]}</span></a>
         </div>
       </div>
+      <p class="hx__corner hx__corner--l" data-in style="--d:760">{l1}<br>{l2}</p>
+      <p class="hx__corner hx__corner--r" data-in style="--d:820">{r1}<br>{r2}</p>
       <button class="hx__skip" type="button">{h["skip"]}</button>
     </div>
   </section>'''
@@ -315,31 +367,37 @@ def hero(c):
 
 def work(c):
     b = c['b']; w = c['work']
-    cards = []
-    for name, meta, kind, txt, im, url in w['cases']:
+    def card(case, dup):
+        name, meta, kind, txt, im, url = case
         tag = w['concept'] if kind == 'concept' else w['site']
         domain = re.sub(r'^https?://(www\.)?|/$', '', url)
         label = domain if 'netlify' not in domain else w['live']
-        pic = (f'<img src="{b}media/work/{im}.webp" alt="{e(name)}: {e(txt)}" loading="lazy" decoding="async" width="828" height="1276">'
+        pic = (f'<img src="{b}media/work/{im}.webp" alt="{"" if dup else e(name) + ": " + e(txt)}" loading="lazy" decoding="async" width="828" height="1276">'
                if im else f'<span class="case__type" aria-hidden="true">{e(domain)}</span>')
-        cards.append(f'''<li class="case{' case--text' if not im else ''}">
-        <a href="{url}" target="_blank" rel="noopener">
+        hide = ' aria-hidden="true"' if dup else ''
+        tab = ' tabindex="-1"' if dup else ''
+        return f'''<li class="case{' case--text' if not im else ''}"{hide}>
+        <a href="{url}" target="_blank" rel="noopener"{tab}>
           <div class="case__frame"><div class="case__pic">{pic}</div><span class="case__tag">{tag}</span><span class="case__go">{label} ↗</span></div>
           <div class="case__info"><h3>{name}</h3><p class="case__meta">{meta}</p><p class="case__txt">{txt}</p></div>
-        </a></li>''')
+        </a></li>'''
+    cards = ''.join(card(cs, False) for cs in w['cases']) + ''.join(card(cs, True) for cs in w['cases'])
     side = f'<p class="sec__side" data-up>{w["note"]}</p>'
     return f'''<section class="sec work" id="work" aria-labelledby="work-title" data-scene="{SCENE["work"]}">
-    <div class="work__pin slide">
+    <div class="slide">
       <div class="slide__in">{head(c, "work", w["title"], side)}</div>
-      <div class="work__rail"><ol class="work__track">{''.join(cards)}</ol></div>
-      <div class="slide__in work__foot"><span class="work__bar"><i></i></span><span class="work__hint">{w["drag"]}</span></div>
+      <div class="reel" data-reel><ol class="reel__track">{cards}</ol></div>
+      <div class="slide__in work__foot"><span class="work__hint">{w["drag"]}</span></div>
     </div>
   </section>'''
 
 
 def problem(c):
     p = c['problem']
-    pains = ''.join(f'<li class="stack__card glass"><h3>{t}</h3><p>{d}</p></li>' for t, d in p['pains'])
+    pains = ''.join(f'''<li class="stack__card glass">
+        <div class="stack__txt"><p class="stack__n">0{i + 1}</p><h3>{t}</h3><p>{d}</p></div>
+        <div class="stack__ill">{ILL[PAIN_ILL[i]]}</div>
+      </li>''' for i, (t, d) in enumerate(p['pains']))
     return f'''<section class="sec problem" id="problem" aria-labelledby="problem-title" data-scene="{SCENE["problem"]}">
     <div class="slide slide--photo" style="background-image: url({c['b']}media/world/clouds-1920.webp)"><div class="slide__in">
       {head(c, "problem", p["title"])}
@@ -355,10 +413,17 @@ def problem(c):
 
 
 def system(c):
-    s = c['system']; b = c['b']
+    s = c['system']; b = c['b']; x = EXTRA[c['lang']]
+    ui = [
+        '''<div class="ui ui--timer"><svg viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="66" class="ui__track"/><circle cx="80" cy="80" r="66" class="ui__run" pathLength="1"/></svg><span>3<small>s</small></span></div>''',
+        '<div class="ui ui--path">' + ''.join(f'<span style="--i:{i}">{t}</span>' for i, t in enumerate(x['path'])) + '</div>',
+        f'''<div class="ui ui--click"><span class="ui__btn">{x["click"]} →</span><i class="ui__ripple"></i>{CURSOR}</div>''',
+    ]
     steps = ''.join(f'''<li class="peak" data-up style="--d:{i * 110}">
         <img src="{b}media/stills/{SYSTEM_STILLS[i]}.webp" alt="" loading="lazy" decoding="async" width="540" height="960">
-        <span class="peak__i">[ 0{i + 1} ]</span><div class="peak__cap glass"><p class="peak__big">{n}</p><h3>{t}</h3><p>{d}</p></div>
+        <span class="peak__i">[ 0{i + 1} ]</span>
+        {ui[i]}
+        <div class="peak__cap glass"><p class="peak__big">{n}</p><h3>{t}</h3><p>{d}</p></div>
       </li>''' for i, (n, t, d) in enumerate(s['steps']))
     return f'''<section class="sec system" aria-labelledby="system-title" data-scene="{SCENE["system"]}">
     <div class="slide slide--light"><div class="slide__in">
@@ -394,24 +459,32 @@ def process(c):
 
 
 def services(c):
-    s = c['services']; k = s['calc']
+    s = c['services']; k = s['calc']; b = c['b']; x = EXTRA[c['lang']]
+    def price(pr):
+        m = re.match(r'^(from|ab)\s+(.*)$', pr)
+        if m: return f'<small>{m.group(1)}</small>{m.group(2)}'
+        return pr.replace(' – ', '<i>–</i>')
     packs = []
-    for key, name, price, sub, items, hot in s['packs']:
-        li = ''.join(f'<li>{CHECK}{x}</li>' for x in items)
-        packs.append(f'''<li class="pack glass{' pack--hot' if hot else ''}" data-up>
-        {f'<span class="pack__badge">{s["badge"]}</span>' if hot else ''}<p class="pack__sub">{sub}</p>
-        <h3 class="pack__name">{name}</h3><p class="pack__price">{price}</p>
+    for i, (key, name, pr, sub, items, hot) in enumerate(s['packs']):
+        li = ''.join(f'<li>{CHECK}{it}</li>' for it in items)
+        packs.append(f'''<li class="pack{' pack--hot' if hot else ''}" style="--i:{i}">
+        <div class="pack__top"><p class="pack__sub">{sub}</p>{f'<span class="pack__badge">{s["badge"]}</span>' if hot else ''}</div>
+        <h3 class="pack__name">{name}</h3>
+        <p class="pack__price">{price(pr)}</p>
         <ul class="pack__list">{li}</ul>
-        {btn(s["pick"], "#start", "light" if not hot else "dark", True, f' data-start data-need="{key}"')}
+        {btn(s["pick"], "#start", "dark" if hot else "light", True, f' data-start data-need="{key}"')}
       </li>''')
     seg = lambda name, opts, on: ''.join(f'<label><input type="radio" name="{name}" value="{v}"{" checked" if v == on else ""}><span>{t}</span></label>' for v, t in opts)
     side = f'<p class="sec__side" data-up>{s["lead"]}</p>'
     return f'''<section class="sec services" id="services" aria-labelledby="services-title" data-scene="{SCENE["services"]}">
-    <div class="slide slide--photo" style="background-image: url({c['b']}media/world/dusk-1920.webp)"><div class="slide__in">
-      {head(c, "services", s["title"], side)}
-      <ol class="packs">{''.join(packs)}</ol>
-      <div class="extras" data-up><span>{s["extras_lbl"]}</span>{''.join(f'<em>{x}</em>' for x in s["extras"])}</div>
-      <form class="calc glass" data-up data-t='{e(json.dumps(k["t"], ensure_ascii=False))}' onsubmit="return false">
+    <div class="slide"><div class="slide__in">
+      {head(c, "services", s["title"], side, ghost=False)}
+      <div class="prices">
+        <p class="word word--prices" aria-hidden="true" style="background-image: linear-gradient(180deg, rgb(255 255 255 / .14), rgb(13 17 23 / .35)), url({b}media/world/peaks-1920.webp)">{x["prices"]}</p>
+        <ol class="packs" data-up>{''.join(packs)}</ol>
+      </div>
+      <div class="extras" data-up><span>{s["extras_lbl"]}</span>{''.join(f'<em>{it}</em>' for it in s["extras"])}</div>
+      <form class="calc" data-up data-t='{e(json.dumps(k["t"], ensure_ascii=False))}' onsubmit="return false">
         <div class="calc__in">
           <h3 class="h3">{k["title"]}</h3>
           <fieldset><legend>{k["type"]}</legend><div class="seg">{seg("type", k["types"], "site")}</div></fieldset>
@@ -420,6 +493,7 @@ def services(c):
           <fieldset><legend>{k["care"]}</legend><div class="seg">{seg("care", k["cares"], "0")}</div></fieldset>
         </div>
         <div class="calc__out">
+          <svg class="calc__mount" viewBox="0 0 400 160" preserveAspectRatio="none" aria-hidden="true"><path class="calc__far" d="M0 160 L70 110 L120 128 L190 84 L250 120 L320 92 L400 160 Z"/><g class="calc__peak"><path d="M30 160 L120 118 L170 132 L230 40 L290 120 L340 104 L400 160 Z"/><path class="calc__snow" d="M206 72 L230 40 L252 74 L240 70 L230 78 L218 68 Z"/></g></svg>
           <p class="label">{k["out"]}</p>
           <p class="calc__price" aria-live="polite">2 400 – 4 600 €</p>
           <p class="calc__care"></p>
@@ -432,10 +506,17 @@ def services(c):
 
 
 def why(c):
-    w = c['why']; b = c['b']
-    rows = ''.join(f'<tr{" class=\"us\"" if i == len(w["rows"]) - 1 else ""}><th scope="row">{r[0]}</th><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td></tr>' for i, r in enumerate(w['rows']))
-    th = ''.join(f'<th scope="col">{x}</th>' for x in w['th'])
-    reasons = ''.join(f'<li class="glass" data-up style="--d:{i * 70}"><h3>{t}</h3><p>{d}</p></li>' for i, (t, d) in enumerate(w['reasons']))
+    w = c['why']; b = c['b']; x = EXTRA[c['lang']]
+    facts = ''.join(f'<li data-up style="--d:{i * 70}"><b>{v}</b><span>{t}</span></li>' for i, (v, t) in enumerate(x['facts']))
+    vs = []
+    for i, (name, pr, up, down) in enumerate(w['rows']):
+        us = i == len(w['rows']) - 1
+        vs.append(f'''<li class="vs__card{' vs__card--us' if us else ''}" data-up style="--d:{i * 80}">
+        {f'<span class="vs__badge">AIK</span>' if us else ''}<h3>{name}</h3><p class="vs__price">{pr}</p>
+        <p class="vs__row"><i>+</i><span><small>{x["vs_up"]}</small>{up}</span></p>
+        <p class="vs__row vs__row--down"><i>–</i><span><small>{x["vs_down"]}</small>{down}</span></p>
+      </li>''')
+    reasons = ''.join(f'<li class="glass" data-up style="--d:{i * 70}"><p class="reasons__n">0{i + 1}</p><h3>{t}</h3><p>{d}</p></li>' for i, (t, d) in enumerate(w['reasons']))
     social = ''.join(f'<a class="chip" href="{u}" target="_blank" rel="noopener">{n} ↗</a>' for n, u in SOCIAL)
     return f'''<section class="sec why" id="why" aria-labelledby="why-title" data-scene="{SCENE["why"]}">
     <div class="slide"><div class="slide__in">
@@ -443,39 +524,41 @@ def why(c):
       <div class="founder">
         <div class="founder__pic" data-up><img src="{b}media/stills/f060.webp" alt="" loading="lazy" decoding="async" width="540" height="960"><p class="founder__name">{w["name"]}<span>{w["role"]}</span></p></div>
         <div class="founder__txt">
-          <p class="read" data-read>{w["quote"]}</p>
+          <p class="founder__q" data-read>“{w["quote"]}”</p>
+          <ul class="facts">{facts}</ul>
           <p class="founder__links" data-up>{social}</p>
         </div>
       </div>
-      <div class="cmp glass" data-up><table><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>
+      <ol class="vs">{''.join(vs)}</ol>
       <ul class="reasons">{reasons}</ul>
     </div></div>
   </section>'''
 
 
 def faq(c):
-    f = c['faq']
-    items = ''.join(f'<li data-up><details><summary><span>{q}</span>{PLUS}</summary><div class="faq__a"><p>{a}</p></div></details></li>' for q, a in f['items'])
+    f = c['faq']; x = EXTRA[c['lang']]
+    items = ''.join(f'<li data-up><details><summary><span class="faq__n">{i + 1:02d}</span><span class="faq__q">{q}</span>{PLUS}</summary><div class="faq__a"><p>{a}</p></div></details></li>' for i, (q, a) in enumerate(f['items']))
+    side = f'<p class="sec__side faq__count" data-up><b>{len(f["items"]):02d}</b>{x["ans"]}</p>'
     return f'''<section class="sec faq" id="faq" aria-labelledby="faq-title" data-scene="{SCENE["faq"]}">
-    <div class="slide"><p class="ghost" aria-hidden="true">{c["ghost"]["faq"]}</p><div class="slide__in faq__grid">
-      <div>{head(c, "faq", f["title"], ghost=False)}</div>
-      <ul class="faq__list glass">{items}</ul>
+    <div class="slide"><p class="ghost" aria-hidden="true">{c["ghost"]["faq"]}</p><div class="slide__in">
+      {head(c, "faq", f["title"], side, ghost=False)}
+      <ul class="faq__list">{items}</ul>
+      <p class="faq__more" data-up><a href="https://wa.me/{WA}" target="_blank" rel="noopener">{x["faq_more"]} ↗</a></p>
     </div></div>
   </section>'''
 
 
 def contact(c):
-    k = c['contact']
+    k = c['contact']; b = c['b']; x = EXTRA[c['lang']]
     badge = ''.join(f'<span style="--i:{i}">{ch}</span>' for i, ch in enumerate(k['badge']))
     social = ''.join(f'<a href="{u}" target="_blank" rel="noopener">{n} ↗</a>' for n, u in SOCIAL[1:])
-    b = c['b']
     return f'''<section class="sec contact" id="contact" aria-labelledby="contact-title" data-scene="{SCENE["contact"]}">
     <div class="slide slide--photo slide--contact">
     <div class="contact__bg" aria-hidden="true"><img src="{b}media/world/dawn-1920.webp" srcset="{b}media/world/dawn-1280.webp 1280w, {b}media/world/dawn-1920.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async"></div>
-    <p class="ghost" aria-hidden="true">{c["ghost"]["contact"]}</p>
     <div class="slide__in">
       <p class="label" data-up><b>[ 08 ]</b>{c["lbl"]["contact"]}</p>
-      <h2 class="h1" id="contact-title" data-blur>{k["title"]}</h2>
+      <p class="word word--contact" aria-hidden="true" style="background-image: linear-gradient(180deg, rgb(255 255 255 / .1), rgb(13 17 23 / .2)), url({b}media/hero4/plate-1920.webp)">{x["word"]}</p>
+      <h2 class="h2 contact__title" id="contact-title" data-blur>{k["title"]}</h2>
       <p class="sec__lead" data-up>{k["lead"]}</p>
       <div class="go">
         <a class="go__card go__card--light" href="#start" data-start data-up>
