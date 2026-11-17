@@ -773,3 +773,5 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 58; pointer-event
   .ill *, .ui, .ui *, .cur { animation: none !important; }
   .packs .pack { opacity: 1 !important; transform: none !important; }
 }
+
+.tax-note { margin-top: 16px; text-align: center; font-size: 13px; color: var(--dim); }

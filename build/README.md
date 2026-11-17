@@ -37,6 +37,36 @@ Netlify Forms (`data-netlify`, form name `project`); the notification e-mail is 
 Netlify dashboard, so no address is in the code. If sending fails (or locally, where there is
 no form backend) the visitor gets the same answers as a ready WhatsApp message to +49 1522 1595565.
 
+## Legal (researched Nov 2026, not legal advice)
+
+`tools/build_legal.py` writes Impressum and Datenschutz from one table (`OWNER`). Fill in:
+name exactly as registered, a serviceable postal address (no P.O. box), e-mail, USt-IdNr. or
+Wirtschafts-IdNr. if one exists, and the host. Gaps show on the pages and block publishing.
+Set `TAX` in `tools/build_site.py` (`'kleinunternehmer'` or `'ust'`) for the price note (PAngV).
+
+Already handled: no OS-platform link (platform closed 20 Jul 2025); voluntary VSBG sentence;
+no cookies, no tracking, no third-party fonts or scripts; the only browser storage is the
+"pause motion" choice, written only when the visitor presses it (§ 25 Abs. 2 Nr. 2 TDDDG);
+"Recommended" instead of an unverifiable "Most chosen" (UWG § 5); the studio sets up legal
+pages, the texts come from a generator or a lawyer (RDG); softer wording in the comparison.
+Still to check: Netlify DPF status and the signed DPA; rights to show MA’LOA / Architekturcontor
+logos and photos in the portfolio; both texts once with a legal-text generator or a lawyer.
+
+## Deploy and security
+
+`netlify.toml` (repo root) builds `build/dist` with `tools/dist.py`: only the pages and the files
+they use, plus `_headers` and `robots.txt`. `dist.py` refuses to publish while legal gaps or the
+price note are open (`ALLOW_DRAFT=1` for a private preview) and fails on inline scripts, inline
+event handlers or `target=_blank` links without `rel="noopener"`.
+
+`_headers`: strict Content-Security-Policy (only own files, no inline script), no framing,
+nosniff, referrer policy, permissions policy, COOP/CORP, HSTS. Checked locally with the same
+headers: 0 policy violations on all pages at 1440 and 390 px.
+
+Accounts: turn on two-factor login for GitHub, Netlify and the domain registrar.
+The dev test kit (`package.json`, `tests/`) is never deployed; it targets the old markup and its
+lighthouse dependency has open advisories, so don't run `npm install` there without updating it.
+
 ## Open before launch
 
 - Impressum and Datenschutz: address, e-mail, VAT status (marked in the pages).

@@ -1,0 +1,11 @@
+# Netlify: build the public folder from build/ and publish only that.
+# tools/dist.py copies just the pages and the files they use (no tools, tests, sources or
+# video masters) and refuses to publish while Impressum / Datenschutz / the price note
+# still have gaps. For a preview with gaps, set ALLOW_DRAFT=1 in the Netlify environment.
+[build]
+  base = "build"
+  command = "python3 tools/build_legal.py . && python3 tools/build_site.py . && python3 tools/dist.py . dist"
+  publish = "dist"
+
+[build.environment]
+  PYTHON_VERSION = "3.11"

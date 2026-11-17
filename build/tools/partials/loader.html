@@ -1,9 +1,4 @@
-<script>
-  document.documentElement.classList.add('is-loading');
-  /* The cinematic opening is opt-in and decided before first paint.
-     Reduced motion or no script: the Hero renders as a finished still. */
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('cine-on');
-</script>
+<script src="{b}js/boot.js"></script>
 </head>
 <body>
 <div class="aik-loader" data-tex="{b}media/loader/aik-lockup.webp" role="status" aria-label="Loading AIK Studio">

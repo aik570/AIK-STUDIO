@@ -77,7 +77,8 @@
   const setStill = (on) => {
     root.classList.toggle('is-still', on);
     pauses.forEach((b) => { b.setAttribute('aria-pressed', String(on)); b.textContent = on ? b.dataset.play : b.dataset.pause; });
-    try { localStorage.setItem('aik-still', on ? '1' : '0'); } catch (e) {}
+    // stored only because the visitor pressed the button (§ 25 Abs. 2 Nr. 2 TDDDG); removed again when motion is resumed
+    try { if (on) localStorage.setItem('aik-still', '1'); else localStorage.removeItem('aik-still'); } catch (e) {}
     document.dispatchEvent(new Event('aik:motion'));
   };
   try { if (localStorage.getItem('aik-still') === '1') setStill(true); } catch (e) {}
@@ -192,6 +193,7 @@
 
   /* ---------------------------------------------------- calculator */
   const calc = $('.calc');
+  if (calc) calc.addEventListener('submit', (e) => e.preventDefault());
   let estimate = null;
   if (calc) {
     const T = JSON.parse(calc.dataset.t);

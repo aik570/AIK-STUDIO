@@ -25,7 +25,7 @@
 
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let quick = false;
-  try { quick = sessionStorage.getItem('aik-seen') === '1'; sessionStorage.setItem('aik-seen', '1'); } catch (e) {}
+  // No storage here: remembering that the intro was seen is not something the visitor asked for (§ 25 TDDDG).
   if (quick) el.classList.add('is-quick');
 
   const mark = el.querySelector('.aik-loader__mark');

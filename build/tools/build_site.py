@@ -43,7 +43,7 @@ T = {
 'en': dict(
   lang='en', b='./', other='./de/', loading='Loading AIK Studio',
   title='AIK Studio | Premium websites for businesses in Berlin and Potsdam',
-  desc='AIK Studio plans, writes, designs and builds websites for businesses in Berlin, Potsdam and across Germany. Redesign, new sites, SEO, Impressum and Datenschutz. Prices from 900 €.',
+  desc='AIK Studio plans, writes, designs and builds websites for businesses in Berlin, Potsdam and across Germany. Redesign, new websites and SEO. Prices from 900 €.',
   skip='Skip to content', menu='Menu', close='Close',
   nav=[('#work', 'Work'), ('#services', 'Services'), ('#process', 'Approach'), ('#why', 'About'), ('#contact', 'Contact')],
   talk='Let’s talk', start='Start a project', pause='Pause motion', play='Resume motion',
@@ -78,13 +78,13 @@ T = {
     you='Your time',
     steps=[('Call', 'We understand the business', 'Your goals, your customers and what the old site gets wrong.', '30 min'),
            ('Concept', 'You see the direction', 'Structure and the first screens, as a real page in your browser.', '30 min'),
-           ('Build', 'We do the work', 'Design, copy, development, speed, SEO basics, Impressum and Datenschutz.', 'none'),
+           ('Build', 'We do the work', 'Design, copy, development, speed, SEO basics, legal pages set up.', 'none'),
            ('Launch', 'Live and handed over', 'All access is yours. We stay on for care if you want.', '30 min')]),
   services=dict(title='Prices you know before we start.', lead='Three packages, one price range each. The exact price is fixed after the first call.',
     packs=[('landing', 'Landing page', '900 – 1 400 €', 'One page, one goal', ['One page built for one offer', 'Fast on every phone', 'Contact form or WhatsApp', 'Basic SEO'], False),
-           ('site', 'Website', '2 400 – 4 600 €', 'Redesign or new', ['Full redesign, built for enquiries', 'Structure, copy, design, build', 'Speed and technical SEO', 'Impressum & Datenschutz', 'First month of care free'], True),
+           ('site', 'Website', '2 400 – 4 600 €', 'Redesign or new', ['Full redesign, built for enquiries', 'Structure, copy, design, build', 'Speed and technical SEO', 'Legal pages set up', 'First month of care free'], True),
            ('premium', 'Premium', 'from 6 900 €', 'Signature site', ['Everything in Website', 'Signature hero: film, 3D or animation', 'Up to 12 pages, two languages', 'Admin panel and 3 months of care', 'Priority timeline'], False)],
-    badge='Most chosen', pick='Choose', extras_lbl='Add on any time', extras=['Care from 150 €/month', 'Admin panel +600 €', 'Speed optimisation', 'SEO', '3D visualisation', 'Market analysis'],
+    badge='Recommended', pick='Choose', extras_lbl='Add on any time', extras=['Care from 150 €/month', 'Admin panel +600 €', 'Speed optimisation', 'SEO', '3D visualisation', 'Market analysis'],
     calc=dict(title='Estimate your project', type='Type', types=[('landing', 'Landing page'), ('site', 'Website'), ('big', 'Large project')],
       pages='Pages', cms='Admin panel (edit it yourself)', cms_note='+600 €', care='Care after launch', cares=[('0', 'None'), ('150', '150 €/mo'), ('300', '300 €/mo')],
       out='Your estimate', note='A guide, not an offer. The exact price comes after a 30-minute call and is fixed before we start.', go='Send this estimate',
@@ -94,8 +94,8 @@ T = {
     quote='You talk to the person who builds your website. No managers in between.',
     th=['', 'Price', 'Upside', 'Downside'],
     rows=[('Website builder', '7–36 €/mo', 'Cheap', 'You do it all yourself; looks like a template'),
-          ('Freelancer', '800–3 000 €', 'Cheaper than an agency', 'Quality varies; often just a picture'),
-          ('Agency', '2 000–8 000 €', 'Team and process', 'Expensive, slow, through a manager'),
+          ('Freelancer', '800–3 000 €', 'Cheaper than an agency', 'Quality depends on the person'),
+          ('Agency', '2 000–8 000 €', 'Team and process', 'Higher price, longer loops, a manager in between'),
           ('AIK Studio', '2 400–4 600 €', 'Turnkey, built for enquiries, direct', 'One founder, so every access is handed to you')],
     reasons=[('Fast', 'A clear plan and short loops instead of months of back and forth.'),
              ('Clear', 'Price, timeline and steps fixed before we start.'),
@@ -106,7 +106,7 @@ T = {
            ('What does it cost?', 'A landing page is 900–1 400 €, a website 2 400–4 600 €, larger projects more. You get a fixed price after the first call.'),
            ('Who owns the website?', 'You do. Domain, hosting, code and all access are handed over at launch.'),
            ('How does payment work?', 'We sign a short contract. 50 % before we start, 50 % at launch.'),
-           ('What about Impressum, Datenschutz and DSGVO?', 'Legal pages and a privacy-friendly setup are part of the build. For legal advice we recommend your Steuerberater or lawyer.'),
+           ('What about Impressum, Datenschutz and DSGVO?', 'We set up the legal pages and build the site privacy-friendly: no tracking, no third-party fonts or scripts. The legal texts themselves come from a recognised legal-text generator or your lawyer; we don’t give legal advice.'),
            ('What happens after launch?', 'Care by subscription (150–300 € per month) or by the hour, or you run it yourself.'),
            ('Do you work in German and English?', 'Yes. Websites in German, English or both.'),
            ('How do I start?', 'Press “Start a project”, answer six short questions, and we get back to you within one working day. Or write on WhatsApp.')]),
@@ -136,7 +136,7 @@ T = {
 'de': dict(
   lang='de', b='../', other='../', loading='AIK Studio wird geladen',
   title='AIK Studio | Premium-Websites für Unternehmen in Berlin und Potsdam',
-  desc='AIK Studio plant, textet, gestaltet und baut Websites für Unternehmen in Berlin, Potsdam und ganz Deutschland. Redesign, neue Websites, SEO, Impressum und Datenschutz. Preise ab 900 €.',
+  desc='AIK Studio plant, textet, gestaltet und baut Websites für Unternehmen in Berlin, Potsdam und ganz Deutschland. Redesign, neue Websites und SEO. Preise ab 900 €.',
   skip='Zum Inhalt', menu='Menü', close='Schließen',
   nav=[('#work', 'Arbeiten'), ('#services', 'Leistungen'), ('#process', 'Ablauf'), ('#why', 'Über uns'), ('#contact', 'Kontakt')],
   talk='Projekt anfragen', start='Projekt starten', pause='Bewegung anhalten', play='Bewegung fortsetzen',
@@ -171,13 +171,13 @@ T = {
     you='Ihre Zeit',
     steps=[('Gespräch', 'Wir verstehen Ihr Geschäft', 'Ihre Ziele, Ihre Kunden und was die alte Seite falsch macht.', '30 Min.'),
            ('Konzept', 'Sie sehen die Richtung', 'Struktur und erste Bildschirme, als echte Seite in Ihrem Browser.', '30 Min.'),
-           ('Umsetzung', 'Wir machen die Arbeit', 'Design, Texte, Entwicklung, Tempo, SEO-Basis, Impressum und Datenschutz.', 'keine'),
+           ('Umsetzung', 'Wir machen die Arbeit', 'Design, Texte, Entwicklung, Tempo, SEO-Basis, Rechtsseiten eingebunden.', 'keine'),
            ('Launch', 'Live und übergeben', 'Alle Zugänge gehören Ihnen. Auf Wunsch betreuen wir weiter.', '30 Min.')]),
   services=dict(title='Preise, die Sie vorher kennen.', lead='Drei Pakete, je eine Preisspanne. Den genauen Preis legen wir nach dem ersten Gespräch fest.',
     packs=[('landing', 'Landingpage', '900 – 1.400 €', 'Eine Seite, ein Ziel', ['Eine Seite für ein Angebot', 'Schnell auf jedem Handy', 'Kontaktformular oder WhatsApp', 'SEO-Grundlagen'], False),
-           ('site', 'Website', '2.400 – 4.600 €', 'Redesign oder neu', ['Komplettes Redesign für Anfragen', 'Struktur, Texte, Design, Umsetzung', 'Tempo und technisches SEO', 'Impressum & Datenschutz', 'Erster Monat Betreuung gratis'], True),
+           ('site', 'Website', '2.400 – 4.600 €', 'Redesign oder neu', ['Komplettes Redesign für Anfragen', 'Struktur, Texte, Design, Umsetzung', 'Tempo und technisches SEO', 'Rechtsseiten eingebunden', 'Erster Monat Betreuung gratis'], True),
            ('premium', 'Premium', 'ab 6.900 €', 'Signature-Website', ['Alles aus „Website“', 'Signature-Hero: Film, 3D oder Animation', 'Bis zu 12 Seiten, zweisprachig', 'Admin-Panel und 3 Monate Betreuung', 'Priorisierter Zeitplan'], False)],
-    badge='Am häufigsten gewählt', pick='Auswählen', extras_lbl='Jederzeit dazu', extras=['Betreuung ab 150 €/Monat', 'Admin-Panel +600 €', 'Tempo-Optimierung', 'SEO', '3D-Visualisierung', 'Marktanalyse'],
+    badge='Empfehlung', pick='Auswählen', extras_lbl='Jederzeit dazu', extras=['Betreuung ab 150 €/Monat', 'Admin-Panel +600 €', 'Tempo-Optimierung', 'SEO', '3D-Visualisierung', 'Marktanalyse'],
     calc=dict(title='Projekt schätzen', type='Art', types=[('landing', 'Landingpage'), ('site', 'Website'), ('big', 'Großes Projekt')],
       pages='Seiten', cms='Admin-Panel (selbst pflegen)', cms_note='+600 €', care='Betreuung nach dem Launch', cares=[('0', 'Keine'), ('150', '150 €/Mon.'), ('300', '300 €/Mon.')],
       out='Ihre Schätzung', note='Eine Orientierung, kein Angebot. Den genauen Preis erhalten Sie nach einem 30-Minuten-Gespräch, fest vor dem Start.', go='Schätzung senden',
@@ -187,8 +187,8 @@ T = {
     quote='Sie sprechen mit dem Menschen, der Ihre Website baut. Keine Manager dazwischen.',
     th=['', 'Preis', 'Vorteil', 'Nachteil'],
     rows=[('Baukasten', '7–36 €/Mon.', 'Günstig', 'Alles selbst machen; wirkt wie eine Vorlage'),
-          ('Freelancer', '800–3.000 €', 'Günstiger als Agentur', 'Qualität schwankt; oft nur ein Bild'),
-          ('Agentur', '2.000–8.000 €', 'Team und Prozess', 'Teuer, langsam, über einen Manager'),
+          ('Freelancer', '800–3.000 €', 'Günstiger als Agentur', 'Qualität hängt von der Person ab'),
+          ('Agentur', '2.000–8.000 €', 'Team und Prozess', 'Höherer Preis, längere Schleifen, ein Manager dazwischen'),
           ('AIK Studio', '2.400–4.600 €', 'Schlüsselfertig, für Anfragen, direkt', 'Ein Gründer, deshalb bekommen Sie alle Zugänge')],
     reasons=[('Schnell', 'Klarer Plan und kurze Schleifen statt monatelangem Hin und Her.'),
              ('Klar', 'Preis, Zeitrahmen und Schritte stehen vor dem Start fest.'),
@@ -199,7 +199,7 @@ T = {
            ('Was kostet das?', 'Eine Landingpage 900–1.400 €, eine Website 2.400–4.600 €, größere Projekte mehr. Nach dem ersten Gespräch erhalten Sie einen Festpreis.'),
            ('Wem gehört die Website?', 'Ihnen. Domain, Hosting, Code und alle Zugänge werden beim Launch übergeben.'),
            ('Wie läuft die Bezahlung?', 'Wir schließen einen kurzen Vertrag. 50 % vor dem Start, 50 % zum Launch.'),
-           ('Und Impressum, Datenschutz, DSGVO?', 'Rechtliche Seiten und ein datenschutzfreundliches Setup gehören zur Umsetzung. Für Rechtsberatung empfehlen wir Ihren Steuerberater oder Anwalt.'),
+           ('Und Impressum, Datenschutz, DSGVO?', 'Wir binden die Rechtsseiten ein und bauen die Website datenschutzfreundlich: ohne Tracking, ohne fremde Schriften oder Skripte. Die Rechtstexte selbst kommen aus einem anerkannten Rechtstext-Generator oder von Ihrem Anwalt; Rechtsberatung leisten wir nicht.'),
            ('Was passiert nach dem Launch?', 'Betreuung im Abo (150–300 € pro Monat) oder nach Aufwand, oder Sie pflegen die Seite selbst.'),
            ('Arbeiten Sie auf Deutsch und Englisch?', 'Ja. Websites auf Deutsch, Englisch oder in beiden Sprachen.'),
            ('Wie fange ich an?', 'Klicken Sie auf „Projekt starten“, beantworten Sie sechs kurze Fragen, und wir melden uns innerhalb eines Werktags. Oder schreiben Sie per WhatsApp.')]),
@@ -229,6 +229,18 @@ T = {
 }
 
 e = html.escape
+
+# Tax status for the price note (PAngV). Set it when known:
+#   'kleinunternehmer' → no VAT is charged (§ 19 UStG)
+#   'ust'              → prices plus VAT; then the offer must be stated as business-only
+#   None               → no note (NOT ready for launch: tools/dist.py refuses to publish)
+TAX = None
+TAX_NOTE = {
+    'kleinunternehmer': {'en': 'All prices are final prices. No VAT is shown (small business, § 19 UStG).',
+                         'de': 'Alle Preise sind Endpreise. Kein Ausweis der Umsatzsteuer gemäß § 19 UStG (Kleinunternehmerregelung).'},
+    'ust': {'en': 'Prices plus VAT. Our offer is aimed exclusively at businesses.',
+            'de': 'Preise zzgl. gesetzlicher Umsatzsteuer. Unser Angebot richtet sich ausschließlich an Unternehmer.'},
+}
 
 # which landscape each part of the page stands in (media/world/*); the hero has its own
 SCENE = {'work': 'spires', 'problem': 'clouds', 'system': 'peaks', 'process': 'walls',
@@ -484,7 +496,8 @@ def services(c):
         <ol class="packs" data-up>{''.join(packs)}</ol>
       </div>
       <div class="extras" data-up><span>{s["extras_lbl"]}</span>{''.join(f'<em>{it}</em>' for it in s["extras"])}</div>
-      <form class="calc" data-up data-t='{e(json.dumps(k["t"], ensure_ascii=False))}' onsubmit="return false">
+      {f'<p class="tax-note" data-up data-tax="{TAX}">{TAX_NOTE[TAX][c["lang"]]}</p>' if TAX else '<p class="tax-note" hidden data-tax="missing"></p>'}
+      <form class="calc" data-up data-t='{e(json.dumps(k["t"], ensure_ascii=False))}'>
         <div class="calc__in">
           <h3 class="h3">{k["title"]}</h3>
           <fieldset><legend>{k["type"]}</legend><div class="seg">{seg("type", k["types"], "site")}</div></fieldset>
@@ -612,11 +625,11 @@ def form(c):
         else:
             ff = f['f']
             body = f'''<div class="fields">
-              <label class="field"><span>{ff["name"]}</span><input name="name" autocomplete="name" placeholder="{ff["name_ph"]}" data-need="{ff["need_name"]}"></label>
-              <label class="field"><span>{ff["phone"]} <small class="opt-note">{ff["phone_opt"]}</small></span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="{ff["phone_ph"]}" data-need="{ff["need_phone"]}"></label>
-              <label class="field"><span>{ff["email"]}</span><input name="email" type="email" autocomplete="email" inputmode="email" placeholder="{ff["email_ph"]}" data-need="{ff["need_email"]}"></label>
+              <label class="field"><span>{ff["name"]}</span><input name="name" autocomplete="name" maxlength="120" placeholder="{ff["name_ph"]}" data-need="{ff["need_name"]}"></label>
+              <label class="field"><span>{ff["phone"]} <small class="opt-note">{ff["phone_opt"]}</small></span><input name="phone" type="tel" autocomplete="tel" maxlength="40" inputmode="tel" placeholder="{ff["phone_ph"]}" data-need="{ff["need_phone"]}"></label>
+              <label class="field"><span>{ff["email"]}</span><input name="email" type="email" autocomplete="email" maxlength="254" inputmode="email" placeholder="{ff["email_ph"]}" data-need="{ff["need_email"]}"></label>
               <p class="field__err" role="alert"></p>
-              <p class="fields__fine">{ff["privacy"]} <a href="{b}datenschutz.html" target="_blank">{ff["privacy_link"]}</a></p>
+              <p class="fields__fine">{ff["privacy"]} <a href="{b}datenschutz.html" target="_blank" rel="noopener">{ff["privacy_link"]}</a></p>
             </div>'''
         auto = st['name'] in ('start', 'way')
         steps.append(f'''<fieldset class="q{' is-on' if i == 0 else ''}" data-step="{i}"{' data-auto' if auto else ''}>
