@@ -50,6 +50,11 @@ if DST.exists(): shutil.rmtree(DST)
 for f in sorted(files):
     (DST / f).parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(SRC / f, DST / f)
-(DST / 'robots.txt').write_text('User-agent: *\nAllow: /\n')
+if blockers:
+    # a draft (legal gaps open) is a private preview: keep it out of search engines
+    (DST / 'robots.txt').write_text('User-agent: *\nDisallow: /\n')
+    with open(DST / '_headers', 'a') as h: h.write('\n/*\n  X-Robots-Tag: noindex, nofollow\n')
+else:
+    (DST / 'robots.txt').write_text('User-agent: *\nAllow: /\n')
 size = sum(p.stat().st_size for p in DST.rglob('*') if p.is_file())
 print(f'dist: {len(files) + 1} files, {size / 1e6:.1f} MB{" (DRAFT)" if blockers else ""}')
