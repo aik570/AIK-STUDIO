@@ -54,7 +54,7 @@ T = {
     alt='Three snowy peaks above a sea of clouds at sunset'),
   lbl=dict(work='Work', problem='The problem', system='The system', process='Your path', services='Services &amp; prices', why='Why AIK', faq='Questions', contact='Contact'),
   ghost=dict(work='WORK', system='SYSTEM', process='PATH', services='PRICES', why='AIK', faq='QUESTIONS', contact='CONTACT'),
-  work=dict(title='Selected work', note='Concepts are labelled as concepts. Live sites open in a new tab.', live='View live', concept='Concept', site='Website', drag='Drag or scroll',
+  work=dict(title='Selected work', note='Concepts are labelled as concepts. Live sites open in a new tab.', live='View live', concept='Concept', site='Website', drag='Click a project to open it',
     cases=[('MA’LOA', 'Restaurants · Eschborn', 'concept', 'Homepage and franchise page for a Hawaiian poké bowl chain. Self-initiated concept, not the live maloa.com.', 'maloa-hero', 'https://maolaheropage.netlify.app/'),
            ('BLF Service', 'Trees & land · Seddiner See', 'site', 'Website for a tree, land and forestry service: services all year round, enquiries and jobs.', 'blf-service', 'https://lucky-parfait-f6d633.netlify.app/'),
            ('Architekturcontor', 'Architecture · Potsdam', 'concept', 'Redesign concept for an architecture office focused on schools: project catalogue and a four-step enquiry.', 'architekturcontor', 'https://nimble-hummingbird-a98d10.netlify.app/'),
@@ -147,7 +147,7 @@ T = {
     alt='Drei verschneite Gipfel über einem Wolkenmeer bei Sonnenuntergang'),
   lbl=dict(work='Arbeiten', problem='Das Problem', system='Das System', process='Ihr Weg', services='Leistungen &amp; Preise', why='Warum AIK', faq='Fragen', contact='Kontakt'),
   ghost=dict(work='ARBEITEN', system='SYSTEM', process='WEG', services='PREISE', why='AIK', faq='FRAGEN', contact='KONTAKT'),
-  work=dict(title='Ausgewählte Arbeiten', note='Konzepte sind als Konzepte gekennzeichnet. Live-Seiten öffnen in einem neuen Tab.', live='Live ansehen', concept='Konzept', site='Website', drag='Ziehen oder scrollen',
+  work=dict(title='Ausgewählte Arbeiten', note='Konzepte sind als Konzepte gekennzeichnet. Live-Seiten öffnen in einem neuen Tab.', live='Live ansehen', concept='Konzept', site='Website', drag='Projekt anklicken zum Öffnen',
     cases=[('MA’LOA', 'Gastronomie · Eschborn', 'concept', 'Startseite und Franchise-Seite für eine Hawaiian-Poké-Bowl-Kette. Eigeninitiatives Konzept, nicht die Live-Seite maloa.com.', 'maloa-hero', 'https://maolaheropage.netlify.app/'),
            ('BLF Service', 'Baum & Land · Seddiner See', 'site', 'Website für einen Baum-, Land- und Forstservice: Leistungen das ganze Jahr, Anfragen und Jobs.', 'blf-service', 'https://lucky-parfait-f6d633.netlify.app/'),
            ('Architekturcontor', 'Architektur · Potsdam', 'concept', 'Redesign-Konzept für ein Architekturbüro mit Schwerpunkt Schulbau: Werkverzeichnis und Anfrage in vier Schritten.', 'architekturcontor', 'https://nimble-hummingbird-a98d10.netlify.app/'),
@@ -399,8 +399,12 @@ def work(c):
     return f'''<section class="sec work" id="work" aria-labelledby="work-title" data-scene="{SCENE["work"]}">
     <div class="slide">
       <div class="slide__in">{head(c, "work", w["title"], side)}</div>
-      <div class="reel" data-reel><ol class="reel__track">{cards}</ol></div>
-      <div class="slide__in work__foot"><span class="work__hint">{w["drag"]}</span></div>
+      <div class="reel" data-reel tabindex="0" aria-label="{w["title"]}"><ol class="reel__track">{cards}</ol></div>
+      <div class="slide__in work__foot">
+        <button class="reel__btn" type="button" data-reel-go="-1" aria-label="{c["form"]["back"]}">←</button>
+        <span class="work__hint">{w["drag"]}</span>
+        <button class="reel__btn" type="button" data-reel-go="1" aria-label="{c["form"]["next"]}">→</button>
+      </div>
     </div>
   </section>'''
 

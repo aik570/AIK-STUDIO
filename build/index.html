@@ -94,7 +94,7 @@
   <section class="sec work" id="work" aria-labelledby="work-title" data-scene="spires">
     <div class="slide">
       <div class="slide__in"><p class="ghost" aria-hidden="true">WORK</p><div class="sec__head"><div><p class="label" data-up><b>[ 01 ]</b>Work</p><h2 class="h2" id="work-title" data-blur>Selected work</h2></div><p class="sec__side" data-up>Concepts are labelled as concepts. Live sites open in a new tab.</p></div></div>
-      <div class="reel" data-reel><ol class="reel__track"><li class="case">
+      <div class="reel" data-reel tabindex="0" aria-label="Selected work"><ol class="reel__track"><li class="case">
         <a href="https://maolaheropage.netlify.app/" target="_blank" rel="noopener">
           <div class="case__frame"><div class="case__pic"><img src="./media/work/maloa-hero.webp" alt="MA’LOA: Homepage and franchise page for a Hawaiian poké bowl chain. Self-initiated concept, not the live maloa.com." loading="lazy" decoding="async" width="828" height="1276"></div><span class="case__tag">Concept</span><span class="case__go">View live ↗</span></div>
           <div class="case__info"><h3>MA’LOA</h3><p class="case__meta">Restaurants · Eschborn</p><p class="case__txt">Homepage and franchise page for a Hawaiian poké bowl chain. Self-initiated concept, not the live maloa.com.</p></div>
@@ -135,7 +135,11 @@
           <div class="case__frame"><div class="case__pic"><span class="case__type" aria-hidden="true">handychirurg.de</span></div><span class="case__tag">Website</span><span class="case__go">handychirurg.de ↗</span></div>
           <div class="case__info"><h3>Handy-Chirurg</h3><p class="case__meta">Phone repair · Potsdam</p><p class="case__txt">Website for a phone repair shop in Potsdam: design and build.</p></div>
         </a></li></ol></div>
-      <div class="slide__in work__foot"><span class="work__hint">Drag or scroll</span></div>
+      <div class="slide__in work__foot">
+        <button class="reel__btn" type="button" data-reel-go="-1" aria-label="Back">←</button>
+        <span class="work__hint">Click a project to open it</span>
+        <button class="reel__btn" type="button" data-reel-go="1" aria-label="Next">→</button>
+      </div>
     </div>
   </section>
   <section class="sec problem" id="problem" aria-labelledby="problem-title" data-scene="clouds">

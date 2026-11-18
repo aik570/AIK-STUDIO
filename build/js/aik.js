@@ -136,42 +136,57 @@
     c.style.setProperty('--b', (1 - p * .4).toFixed(3));
   }));
 
-  /* ---------------------------------------------------- work: a reel that turns by itself
-     The cards drift sideways on their own and bend away at the edges like a curved ribbon.
-     Hover slows it down, a drag (mouse or finger) moves it, the motion pause stops it. */
+  /* ---------------------------------------------------- work: a calm reel
+     It moves on by one project every few seconds and then rests. It stops while the mouse is
+     over it or a finger is on it, and waits a while after any interaction. Arrows and a drag
+     move it by hand; a click on a card opens the project. No 3D: the cards stay flat so every
+     click lands on the card's link. */
   const reel = $('[data-reel]');
   if (reel) {
     const track = $('.reel__track', reel);
     const cards = $$('.case', reel);
-    let x = 0, half = 0, speed = 38, target = 38, last = performance.now(), drag = null, moved = false, vis = true;
-    const measure = () => { half = track.scrollWidth / 2; };
+    const STEP_MS = 4200, IDLE_MS = 7000;
+    let x = 0, target = 0, step = 300, half = 0, last = performance.now(), wait = 0, hover = false, vis = true, drag = null, moved = false, idleUntil = 0;
+    const measure = () => {
+      const g = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap) || 20;
+      step = (cards[0] ? cards[0].offsetWidth : 300) + g;
+      half = track.scrollWidth / 2;
+    };
     measure(); addEventListener('resize', measure);
     new IntersectionObserver(([en]) => { vis = en.isIntersecting; }).observe(reel);
-    reel.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') target = 10; });
-    reel.addEventListener('pointerleave', () => { target = 38; });
-    reel.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, x0: x, id: e.pointerId }; moved = false; });
+    const rest = (ms) => { idleUntil = performance.now() + ms; wait = 0; };
+    const go = (dir) => { target = Math.round(target / step) * step + dir * step; rest(IDLE_MS); };
+    $$('[data-reel-go]').forEach((btn) => btn.addEventListener('click', () => go(+btn.dataset.reelGo)));
+    reel.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hover = true; });
+    reel.addEventListener('pointerleave', () => { hover = false; wait = 0; });
+    reel.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, x0: x }; moved = false; rest(IDLE_MS); });
     addEventListener('pointermove', (e) => {
       if (!drag) return;
       const dx = e.clientX - drag.x;
-      if (!moved && Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(e.clientY - drag.y)) { moved = true; reel.classList.add('is-drag'); }
-      if (moved) x = drag.x0 - dx;
+      if (!moved && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(e.clientY - drag.y)) { moved = true; reel.classList.add('is-drag'); }
+      if (moved) { x = drag.x0 - dx; target = x; }
     }, { passive: true });
-    const up = () => { drag = null; reel.classList.remove('is-drag'); };
+    const up = () => {
+      if (drag && moved) target = Math.round(x / step) * step;
+      drag = null; reel.classList.remove('is-drag'); rest(IDLE_MS);
+    };
     addEventListener('pointerup', up); addEventListener('pointercancel', up);
-    reel.addEventListener('click', (e) => { if (moved) { e.preventDefault(); moved = false; } }, true);
+    reel.addEventListener('click', (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+    reel.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); });
     const frame = (now) => {
       const dt = Math.min(64, now - last) / 1000; last = now;
       if (vis) {
         const still = reduce || root.classList.contains('is-still');
-        speed += ((still ? 0 : target) - speed) * Math.min(1, dt * 3);
-        if (!drag) x += speed * dt;
-        if (half) { x = ((x % half) + half) % half; }
-        track.style.setProperty('--rx', `${(-x).toFixed(1)}px`);
+        if (!still && !hover && !drag && now > idleUntil) { wait += dt * 1000; if (wait > STEP_MS) { wait = 0; target += step; } }
+        if (!drag) { x += (target - x) * (1 - Math.exp(-dt * 6)); if (Math.abs(target - x) < .4) x = target; }
+        if (half) { while (x >= half) { x -= half; target -= half; } while (x < 0) { x += half; target += half; } }
+        track.style.transform = `translate3d(${(-x).toFixed(1)}px, 0, 0)`;
         const W = reel.clientWidth, cx = reel.getBoundingClientRect().left + W / 2;
         cards.forEach((c) => {
-          const r = c.getBoundingClientRect(); const k = Math.max(-1.4, Math.min(1.4, (r.left + r.width / 2 - cx) / (W / 2)));
-          c.style.setProperty('--ry', `${(-k * 22).toFixed(2)}deg`);
-          c.style.setProperty('--rz', `${(-Math.abs(k) * 90).toFixed(1)}px`);
+          const r = c.getBoundingClientRect();
+          const k = Math.min(1, Math.abs(r.left + r.width / 2 - cx) / (W / 2));
+          c.style.setProperty('--sc', (1 - k * k * .08).toFixed(3));
+          c.style.setProperty('--op', (1 - k * k * .45).toFixed(3));
         });
       }
       requestAnimationFrame(frame);
